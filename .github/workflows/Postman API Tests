@@ -26,11 +26,11 @@ jobs:
         run: |
           newman run Mpeople-_Leave_policy_create_to_approve_flow.postman_collection.json \
             -e Mpeople_postman_environment.json \
-            --reporters cli,junit \
-            --reporter-junit-export results/report.xml
+            --reporters cli,htmlextra \
+            --reporter-htmlextra-export results/report.html
 
       - name: Upload Test Report
         uses: actions/upload-artifact@v4
         with:
-          name: postman-test-report
-          path: results/report.xml
+          name: postman-html-report
+          path: results/report.html
