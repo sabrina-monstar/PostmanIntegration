@@ -26,7 +26,7 @@ jobs:
       - name: Run Postman Tests
         run: |
           newman run MpeopleLeaveFlow.postman_collection.json \
-            -e Mpeople_postman_environment.json \
+            -e Mpeople.postman_environment.json \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export results/report.html
 
