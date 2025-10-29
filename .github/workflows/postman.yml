@@ -25,7 +25,7 @@ jobs:
 
       - name: Run Postman Tests
         run: |
-          newman run Mpeople-_Leave_policy_create_to_approve_flow.postman_collection.json \
+          newman run MpeopleLeaveFlow.postman_collection.json \
             -e Mpeople_postman_environment.json \
             --reporters cli,htmlextra \
             --reporter-htmlextra-export results/report.html
