@@ -1,0 +1,33 @@
+name: Run Postman Monitor
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Postman Monitor
+        run: |
+          response=$(curl -X POST \
+            'https://api.getpostman.com/monitors/1f0b4c3f-79dc-4620-b6e8-6ee63795c81f/run' \
+            -H 'X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}' \
+            -H 'Content-Type: application/json')
+          
+          echo "Monitor triggered: $response"
+          
+          # Extract run ID for result checking
+          run_id=$(echo $response | jq -r '.run.info.jobId')
+          echo "Run ID: $run_id"
+
+      - name: Wait for monitor completion
+        run: sleep 30
+
+      - name: Get monitor results
+        run: |
+          curl -X GET \
+            'https://api.getpostman.com/monitors/1f0b4c3f-79dc-4620-b6e8-6ee63795c81f' \
+            -H 'X-Api-Key: ${{ secrets.POSTMAN_API_KEY }}'
