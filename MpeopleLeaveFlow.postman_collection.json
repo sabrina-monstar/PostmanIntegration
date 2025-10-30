@@ -1,0 +1,2426 @@
+{
+	"info": {
+		"_postman_id": "fda26812-d16d-49c5-b14a-d1149b430d92",
+		"name": "MpeopleLeaveFlow",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17778453",
+		"_collection_link": "https://grey-firefly-744674.postman.co/workspace/Mpeople~11f856c6-3bdd-4af5-b697-2d7229532735/collection/17778453-fda26812-d16d-49c5-b14a-d1149b430d92?action=share&source=collection_link&creator=17778453"
+	},
+	"item": [
+		{
+			"name": "Sign up",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Validate response status code",
+							"pm.test(\"Status code is 201 (Created)\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Test 2: Validate response time",
+							"pm.test(\"Response time is acceptable (< 2000ms)\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Parse response body",
+							"let jsonData;",
+							"try {",
+							"    jsonData = pm.response.json();",
+							"} catch (e) {",
+							"    pm.test(\"Response is valid JSON\", function () {",
+							"        throw new Error(\"Response is not valid JSON\");",
+							"    });",
+							"}",
+							"",
+							"// Test 3: Validate response structure - top level",
+							"pm.test(\"Response contains required top-level fields\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"    pm.expect(jsonData).to.have.property(\"user\");",
+							"});",
+							"",
+							"// Test 4: Validate success message",
+							"pm.test(\"Response contains success message\", function () {",
+							"    pm.expect(jsonData.message).to.be.a(\"string\");",
+							"    pm.expect(jsonData.message.toLowerCase()).to.include(\"success\");",
+							"});",
+							"",
+							"// Test 5: Validate user object structure",
+							"pm.test(\"User object contains all required fields\", function () {",
+							"    const user = jsonData.user;",
+							"    pm.expect(user).to.have.property(\"id\");",
+							"    pm.expect(user).to.have.property(\"email\");",
+							"    pm.expect(user).to.have.property(\"name\");",
+							"    pm.expect(user).to.have.property(\"phone\");",
+							"    pm.expect(user).to.have.property(\"is_allowed\");",
+							"    pm.expect(user).to.have.property(\"checkin_type\");",
+							"    pm.expect(user).to.have.property(\"company_id\");",
+							"    pm.expect(user).to.have.property(\"user_level\");",
+							"    pm.expect(user).to.have.property(\"profile\");",
+							"    pm.expect(user).to.have.property(\"created_at\");",
+							"    pm.expect(user).to.have.property(\"updated_at\");",
+							"});",
+							"",
+							"// Test 6: Validate user field types",
+							"pm.test(\"User fields have correct data types\", function () {",
+							"    const user = jsonData.user;",
+							"    pm.expect(user.id).to.be.a(\"number\");",
+							"    pm.expect(user.email).to.be.a(\"string\");",
+							"    pm.expect(user.name).to.be.a(\"string\");",
+							"    pm.expect(user.phone).to.be.a(\"string\");",
+							"    pm.expect(user.company_id).to.be.a(\"number\");",
+							"    pm.expect(user.user_level).to.be.a(\"string\");",
+							"    pm.expect(user.checkin_type).to.be.a(\"string\");",
+							"});",
+							"",
+							"// Test 7: Validate email matches request",
+							"pm.test(\"Email in response matches the request email\", function () {",
+							"    const requestEmail = pm.environment.get(\"email\");",
+							"    pm.expect(jsonData.user.email).to.equal(requestEmail);",
+							"});",
+							"",
+							"// Test 8: Validate user properties",
+							"pm.test(\"User is_allowed is set correctly\", function () {",
+							"    pm.expect(jsonData.user.is_allowed).to.equal(1);",
+							"});",
+							"",
+							"pm.test(\"User checkin_type is FROM_HOME\", function () {",
+							"    pm.expect(jsonData.user.checkin_type).to.equal(\"FROM_HOME\");",
+							"});",
+							"",
+							"pm.test(\"User level is ADMIN\", function () {",
+							"    pm.expect(jsonData.user.user_level).to.equal(\"ADMIN\");",
+							"});",
+							"",
+							"// Test 9: Validate profile object",
+							"pm.test(\"Profile object contains required fields\", function () {",
+							"    const profile = jsonData.user.profile;",
+							"    pm.expect(profile).to.have.property(\"name\");",
+							"    pm.expect(profile).to.have.property(\"email\");",
+							"    pm.expect(profile).to.have.property(\"phone\");",
+							"});",
+							"",
+							"pm.test(\"Profile data matches user data\", function () {",
+							"    const user = jsonData.user;",
+							"    const profile = user.profile;",
+							"    pm.expect(profile.name).to.equal(user.name);",
+							"    pm.expect(profile.email).to.equal(user.email);",
+							"    pm.expect(profile.phone).to.equal(user.phone);",
+							"});",
+							"",
+							"// Test 10: Validate timestamps",
+							"pm.test(\"Timestamps are in valid ISO format\", function () {",
+							"    const user = jsonData.user;",
+							"    pm.expect(user.created_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"    pm.expect(user.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"});",
+							"",
+							"// Test 11: Validate ID is positive number",
+							"pm.test(\"User ID is a positive number\", function () {",
+							"    pm.expect(jsonData.user.id).to.be.above(0);",
+							"});",
+							"",
+							"pm.test(\"Company ID is a positive number\", function () {",
+							"    pm.expect(jsonData.user.company_id).to.be.above(0);",
+							"});",
+							"",
+							"// Save important values to environment variables for subsequent requests",
+							"    pm.environment.set(\"user_id\", jsonData.user.id);",
+							"    pm.environment.set(\"company_id\", jsonData.user.company_id);",
+							"    pm.environment.set(\"user_level\", jsonData.user.user_level);",
+							"    pm.environment.set(\"checkin_type\", jsonData.user.checkin_type);",
+							"    "
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate random email",
+							"let randomEmail = `testuser_${Math.floor(Math.random() * 100000)}@example.com`;",
+							"",
+							"// Save it as an environment variable",
+							"pm.environment.set(\"email\", randomEmail);",
+							"",
+							"// Optional: Save password too",
+							"pm.environment.set(\"password\", \"Test@1234\");"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Postman\",\n    \"email\":\"{{email}}\",\n    \"phone\":\"{{$randomPhoneNumber}}\",\n    \"company_name\":\"Postman test\",\n    \"password\":\"{{password}}\",\n    \"referral_code\":\"\"\n    \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/register",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				},
+				"description": "# User Registration (Sign Up)\n\n## Overview\nThis endpoint allows new users to register and create an account in the Mpeople system. Upon successful registration, a new user account is created with default settings, and the user information is returned along with a success message. This is typically the first step in the user onboarding workflow.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/register`\n\n## Authentication\nThis endpoint does not require authentication as it's used for initial user registration.\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| name | string | Yes | Full name of the user registering |\n| email | string | Yes | Valid email address (must be unique in the system) |\n| phone | string | Yes | Contact phone number |\n| company_name | string | Yes | Name of the company the user belongs to |\n| password | string | Yes | Password for the account (should meet security requirements) |\n| referral_code | string | No | Optional referral code if the user was referred by someone |\n\n### Example Request Body\n```json\n{\n  \"name\": \"Postman\",\n  \"email\": \"{{email}}\",\n  \"phone\": \"{{$randomPhoneNumber}}\",\n  \"company_name\": \"Postman test\",\n  \"password\": \"{{password}}\",\n  \"referral_code\": \"\"\n}\n```\n\n## Response\n\n### Success Response (201 Created)\nThe endpoint returns a success message along with the newly created user object.\n\n#### Response Structure\n```json\n{\n  \"message\": \"User registered successfully\",\n  \"user\": {\n    \"id\": number,\n    \"email\": string,\n    \"name\": string,\n    \"phone\": string,\n    \"is_allowed\": number,\n    \"checkin_type\": string,\n    \"company_id\": number,\n    \"user_level\": string,\n    \"profile\": {\n      \"name\": string,\n      \"email\": string,\n      \"phone\": string\n    },\n    \"created_at\": string,\n    \"updated_at\": string\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| message | string | Confirmation message indicating successful registration |\n| user.id | number | Unique identifier assigned to the newly created user |\n| user.email | string | Email address of the registered user |\n| user.name | string | Full name of the user |\n| user.phone | string | Contact phone number |\n| user.is_allowed | number | Access permission flag (1 = allowed, 0 = not allowed) |\n| user.checkin_type | string | Default check-in type (typically \"FROM_HOME\") |\n| user.company_id | number | ID of the company created/associated with this user |\n| user.user_level | string | User role level (typically \"ADMIN\" for first user) |\n| user.profile | object | User profile information containing name, email, and phone |\n| user.created_at | string | Timestamp when the user account was created |\n| user.updated_at | string | Timestamp when the user account was last updated |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP 201 status code (Created)\n- ✅ Response time is acceptable (< 2000ms)\n- ✅ Response is valid JSON\n- ✅ Response contains required top-level fields (message, user)\n- ✅ Success message is present\n- ✅ User object contains all required fields\n- ✅ User field data types are correct\n- ✅ Email in response matches the request email\n- ✅ User properties (is_allowed, checkin_type, user_level) are set correctly\n- ✅ Profile object contains required fields and matches user data\n- ✅ Timestamps are in valid ISO 8601 format\n- ✅ IDs are positive numbers\n\n## Pre-Request Script\nThis request includes a pre-request script that:\n- Generates a random email address to ensure uniqueness\n- Sets the email as an environment variable `{{email}}`\n- Sets a default password as environment variable `{{password}}`\n\n## Environment Variables Set\nAfter successful execution, the following environment variables are automatically saved for use in subsequent requests:\n- `user_id` - The newly created user's ID\n- `company_id` - The company ID associated with the user\n- `user_level` - The user's role level\n- `checkin_type` - The user's check-in type\n\n## Usage Notes\n- The email address must be unique; attempting to register with an existing email will result in an error\n- The first user registered for a company typically receives ADMIN privileges\n- The phone number should be in a valid format\n- The password should meet any security requirements enforced by the system\n- The referral code is optional and can be left empty\n- This endpoint automatically creates a company record if the company doesn't exist\n- Default settings are applied: `is_allowed=1`, `checkin_type=FROM_HOME`, `user_level=ADMIN`"
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Verify response status code is 200 (successful login)",
+							"pm.test(\"Status code is 200 - Login successful\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response time is acceptable (under 2 seconds)",
+							"pm.test(\"Response time is acceptable\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Test 3: Verify response has JSON body",
+							"pm.test(\"Response is valid JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Parse the JSON response",
+							"let jsonData;",
+							"try {",
+							"    jsonData = pm.response.json();",
+							"    console.log(\"Login Response:\", JSON.stringify(jsonData, null, 2));",
+							"} catch (e) {",
+							"    console.error(\"Failed to parse JSON response:\", e);",
+							"}",
+							"",
+							"// Test 4: Verify response contains token",
+							"pm.test(\"Response contains token\", function () {",
+							"    pm.expect(jsonData).to.have.property('token');",
+							"    pm.expect(jsonData.token).to.not.be.empty;",
+							"});",
+							"",
+							"// Test 5: Verify token format (should be a non-empty string)",
+							"pm.test(\"Token has valid format\", function () {",
+							"    pm.expect(jsonData.token).to.be.a('string');",
+							"    pm.expect(jsonData.token.length).to.be.above(10);",
+							"});",
+							"",
+							"// Test 6: Verify response contains user object",
+							"pm.test(\"Response contains user object\", function () {",
+							"    pm.expect(jsonData).to.have.property('user');",
+							"    pm.expect(jsonData.user).to.be.an('object');",
+							"});",
+							"",
+							"// Test 7: Verify user object contains required fields",
+							"pm.test(\"User object contains required fields\", function () {",
+							"    pm.expect(jsonData.user).to.have.property('id');",
+							"    pm.expect(jsonData.user).to.have.property('email');",
+							"});",
+							"",
+							"// Test 8: Verify user email matches the login email",
+							"pm.test(\"User email matches login credentials\", function () {",
+							"    const loginEmail = pm.environment.get(\"email\");",
+							"    if (loginEmail && jsonData.user && jsonData.user.email) {",
+							"        pm.expect(jsonData.user.email).to.eql(loginEmail);",
+							"    }",
+							"});",
+							"",
+							"// Test 9: Verify user ID is valid",
+							"pm.test(\"User ID is valid\", function () {",
+							"    pm.expect(jsonData.user.id).to.exist;",
+							"    pm.expect(jsonData.user.id).to.be.a('number');",
+							"});",
+							"",
+							"// Store the token for future requests",
+							"if (jsonData && jsonData.token) {",
+							"    pm.environment.set(\"access_token\", jsonData.token);",
+							"    console.log(\"Token saved to environment variable 'access_token'\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"device\": \"web\"\n  \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/login",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "# User Login\n\n## Overview\nThis endpoint authenticates a user and provides an access token for subsequent API requests. Upon successful login, the API returns a JWT (JSON Web Token) that must be included in the Authorization header of all authenticated requests. This is a critical endpoint in the authentication workflow.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/login`\n\n## Authentication\nThis endpoint does not require authentication (it provides the authentication token).\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| email | string | Yes | The registered email address of the user |\n| password | string | Yes | The user's password |\n| device | string | Yes | The device type from which the login is being performed (e.g., \"web\", \"mobile\", \"ios\", \"android\") |\n\n### Example Request Body\n```json\n{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\",\n  \"device\": \"web\"\n}\n```\n\n## Response\n\n### Success Response (200 OK)\nThe endpoint returns an access token along with user information.\n\n#### Response Structure\n```json\n{\n  \"token\": string,\n  \"user\": {\n    \"id\": number,\n    \"email\": string,\n    \"name\": string,\n    \"phone\": string,\n    \"company_id\": number,\n    \"user_level\": string,\n    \"checkin_type\": string,\n    \"is_allowed\": number,\n    \"profile\": object,\n    \"created_at\": string,\n    \"updated_at\": string\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| token | string | JWT access token to be used for authenticating subsequent API requests |\n| user.id | number | Unique identifier of the logged-in user |\n| user.email | string | Email address of the user |\n| user.name | string | Full name of the user |\n| user.phone | string | Contact phone number |\n| user.company_id | number | ID of the company the user belongs to |\n| user.user_level | string | User's role level (e.g., \"ADMIN\", \"USER\", \"MANAGER\") |\n| user.checkin_type | string | User's check-in type setting |\n| user.is_allowed | number | Access permission flag (1 = allowed, 0 = not allowed) |\n| user.profile | object | Additional user profile information |\n| user.created_at | string | Timestamp when the user account was created |\n| user.updated_at | string | Timestamp when the user account was last updated |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP 200 status code (Login successful)\n- ✅ Response time is acceptable (< 2000ms)\n- ✅ Response is valid JSON\n- ✅ Response contains token field\n- ✅ Token is not empty and has valid format (length > 10 characters)\n- ✅ Response contains user object\n- ✅ User object contains required fields (id, email)\n- ✅ User email matches the login credentials\n- ✅ User ID is valid (exists and is a number)\n\n## Environment Variables Set\nAfter successful execution, the following environment variable is automatically saved:\n- `access_token` - The JWT token for authenticating subsequent requests\n\nThis token is critical for all authenticated endpoints and is automatically used in requests that have Bearer token authentication configured.\n\n## Usage Notes\n- The access token should be stored securely and included in the Authorization header as `Bearer {{access_token}}` for all authenticated requests\n- Tokens may have an expiration time; if a request returns 401 Unauthorized, re-authenticate using this endpoint\n- The device parameter helps track user sessions across different platforms\n- Invalid credentials will result in an authentication error\n- The token format is typically a JWT (JSON Web Token) with a length greater than 10 characters\n- After successful login, the token is automatically saved to the environment variable `access_token` for use in subsequent requests\n\n## Error Responses\n- **401 Unauthorized** - Invalid email or password\n- **422 Unprocessable Entity** - Validation errors (e.g., missing required fields)\n- **403 Forbidden** - Account may be disabled or not allowed to access"
+			},
+			"response": []
+		},
+		{
+			"name": "Create Department",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Validate response status code is 201 or 200",
+							"pm.test(\"Status code is 201 (Created) or 200 (OK)\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"// Test 2: Validate response time is under 2000ms",
+							"pm.test(\"Response time is reasonable (under 2000ms)\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Test 3: Validate response has JSON body",
+							"pm.test(\"Response has JSON body\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Test 4: Validate Content-Type header",
+							"pm.test(\"Response has proper Content-Type header\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// Parse response body",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Log response data for debugging",
+							"console.log(\"=== Create Department Response ===\");",
+							"console.log(\"Status Code:\", pm.response.code);",
+							"console.log(\"Response Time:\", pm.response.responseTime + \"ms\");",
+							"console.log(\"Response Body:\", JSON.stringify(jsonData, null, 2));",
+							"",
+							"// Test 5: Validate response contains expected fields",
+							"pm.test(\"Response contains expected department fields\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    pm.expect(jsonData.data).to.have.property(\"id\");",
+							"    pm.expect(jsonData.data).to.have.property(\"name\");",
+							"});",
+							"",
+							"// Test 6: Validate department name matches request body",
+							"pm.test(\"Department name in response matches request body\", function () {",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(jsonData.data.name).to.eql(requestBody.name);",
+							"});",
+							"",
+							"// Test 7: Validate id field is not null/undefined",
+							"pm.test(\"Department ID is present and valid\", function () {",
+							"    pm.expect(jsonData.data.id).to.exist;",
+							"    pm.expect(jsonData.data.id).to.not.be.null;",
+							"});",
+							"",
+							"// Test 8: Validate name field is a string",
+							"pm.test(\"Department name is a string\", function () {",
+							"    pm.expect(jsonData.data.name).to.be.a(\"string\");",
+							"});",
+							"",
+							"//Save Environment variable",
+							" pm.environment.set(\"department_id\", jsonData.data.id);",
+							" pm.environment.set(\"department_name\", jsonData.data.name);",
+							"    ",
+							"// Log request details for debugging",
+							"console.log(\"=== Create Department Request ===\");",
+							"console.log(\"Request URL:\", pm.request.url.toString());",
+							"console.log(\"Request Method:\", pm.request.method);",
+							"console.log(\"Request Body:\", pm.request.body.raw);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/department",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"department"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create branch",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Validate response status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Validate response body structure",
+							"pm.test(\"Response has required fields\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"});",
+							"",
+							"// Test 3: Validate field types",
+							"pm.test(\"Response fields have correct types\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.be.a('string');",
+							"    pm.expect(jsonData.status).to.be.a('number');",
+							"});",
+							"",
+							"// Test 4: Validate specific values",
+							"pm.test(\"Response contains success message\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Successfully Branch Created\");",
+							"    pm.expect(jsonData.status).to.eql(200);",
+							"});",
+							"",
+							"// Test 5: Validate response time",
+							"pm.test(\"Response time is less than 5000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+							"});",
+							"",
+							"// Test 6: Validate Content-Type header",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test_branch\",\n    \"entry_time\": \"10:00:00\",\n    \"exit_time\": \"18:00:00\",\n    \"is_overtime\": 1,\n    \"ot_calculation_rules\": \"by_hours\",\n    \"address\": \"Dhaka, Sher E Bangla Nagar, Dhaka\",\n    \"exact_address\": \"Dhaka, Sher E Bangla Nagar, Dhaka\",\n    \"latitude\": \"23.75983628514989\",\n    \"longitude\": \"90.37965059280396\",\n    \"uid\": \"uf23YrAIAlG_mzWs\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/branch",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"branch"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create designation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Verify response status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response has JSON body",
+							"pm.test(\"Response is JSON\", function () {",
+							"    pm.response.to.be.json;",
+							"});",
+							"",
+							"// Parse response data",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Test 3: Verify response structure",
+							"pm.test(\"Response has required properties\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"    pm.expect(jsonData).to.have.property(\"data\");",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"});",
+							"",
+							"// Test 4: Verify success message",
+							"pm.test(\"Success message is correct\", function () {",
+							"    pm.expect(jsonData.message).to.include(\"Successfully Designation Created\");",
+							"});",
+							"",
+							"// Test 5: Verify data object structure",
+							"pm.test(\"Data object has required properties\", function () {",
+							"    pm.expect(jsonData.data).to.have.property(\"id\");",
+							"    pm.expect(jsonData.data).to.have.property(\"name\");",
+							"    pm.expect(jsonData.data).to.have.property(\"department_id\");",
+							"    pm.expect(jsonData.data).to.have.property(\"created_at\");",
+							"    pm.expect(jsonData.data).to.have.property(\"updated_at\");",
+							"});",
+							"",
+							"// Test 6: Verify data types",
+							"pm.test(\"Data types are correct\", function () {",
+							"    pm.expect(jsonData.data.id).to.be.a(\"number\");",
+							"    pm.expect(jsonData.data.name).to.be.a(\"string\");",
+							"    pm.expect(jsonData.data.department_id).to.be.a(\"number\");",
+							"    pm.expect(jsonData.status).to.equal(200);",
+							"});",
+							"",
+							"// Test 7: Verify designation name is not empty",
+							"pm.test(\"Designation name is not empty\", function () {",
+							"    pm.expect(jsonData.data.name).to.not.be.empty;",
+							"});",
+							"",
+							"// Test 8: Verify timestamps are valid",
+							"pm.test(\"Timestamps are valid ISO 8601 format\", function () {",
+							"    pm.expect(jsonData.data.created_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"    pm.expect(jsonData.data.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"});",
+							"",
+							"// Set environment variables from response data ",
+							"pm.environment.set(\"designation_id\", jsonData.data?.id);",
+							"pm.environment.set(\"designation_name\", jsonData.data?.name);",
+							"pm.environment.set(\"designation_department_id\", jsonData.data?.department_id);",
+							"pm.environment.set(\"designation_created_at\", jsonData.data?.created_at);",
+							"pm.environment.set(\"designation_updated_at\", jsonData.data?.updated_at);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"department_id\": {{department_id}},\n    \"name\": \"HR\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/designation",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"designation"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create bulk user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate a unique random email address",
+							"const randomString = Math.random().toString(36).substring(2, 10);",
+							"const timestamp = Date.now();",
+							"const generatedEmail = `user_${randomString}@example.com`;",
+							"",
+							"// Save the generated email to environment variable",
+							"pm.environment.set(\"generated_email\", generatedEmail);",
+							"",
+							"console.log(\"Generated email:\", generatedEmail);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"users\": [\n    {\n      \"name\": \"User Last\",\n      \"email\": \"{{generated_email}}\",\n      \"phone\": \"{{$randomPhoneNumber}}\",\n      \"department\": \"Tech\",\n      \"designation\": \"Software Engineer\",\n      \"branch\": \"MLBD\",\n      \"employee_id\": \"1284631\",\n      \"gender\": \"Male\",\n      \"salary\": \"50000\",\n      \"nid\": \"54323489\",\n      \"tin\": \"77654389\",\n      \"house_address\": \"Dummy address 1\",\n      \"birth_day\": \"2000-01-29\",\n      \"blood_group\": \"A+\",\n      \"last_working_place\": \"Dummy place 1\",\n      \"official_email\": \"dummy1@officeMail.com\",\n      \"office_phone\": \"1711855634\",\n      \"joining_date\": \"2020-01-29\",\n      \"reporting_person\": null,\n      \"entry_time\": \"12:00 PM\",\n      \"enable_individual_checkin\": \"true\",\n      \"account_title\": \"Bank account name 1\",\n      \"account_number\": \"123445512\",\n      \"bank_name\": \"Bank name 1\",\n      \"branch_name\": \"Branch name 1\",\n      \"routing_number\": \"1234\",\n      \"contact_person\": \"Contact person name 1\",\n      \"relationship\": \"Mother\",\n      \"working_place_of_emergency_contact\": \"Place 1\",\n      \"emergency_mobile_number\": \"012345756\"\n    }\n   \n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/create-bulk-user",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"create-bulk-user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create single user (Fixed)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Generate unique identifier using timestamp and random number",
+							"const timestamp = Date.now();",
+							"const randomNum = Math.floor(Math.random() * 10000);",
+							"const uniqueIdentifier = `${timestamp}${randomNum}`;",
+							"",
+							"// Generate the full email address",
+							"const fullEmail = `sabrina.rashid+${uniqueIdentifier}@monstar-lab.com`;",
+							"",
+							"// Generate the email name (part before @)",
+							"const emailName = `sabrina.rashid+${uniqueIdentifier}`;",
+							"",
+							"// Save to environment variables",
+							"pm.environment.set(\"single_email\", fullEmail);",
+							"pm.environment.set(\"unique_email_name\", emailName);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test for successful user creation (200 OK)",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has correct structure for success\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"    pm.expect(jsonData.status).to.eql(200);",
+							"});",
+							"",
+							"// Validate response data types and structure",
+							"pm.test(\"Response contains user object with all required properties\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('user');",
+							"    ",
+							"    var userData = jsonData.user;",
+							"    pm.expect(userData).to.have.property('id');",
+							"    pm.expect(userData).to.have.property('name');",
+							"    pm.expect(userData).to.have.property('email');",
+							"    pm.expect(userData).to.have.property('phone');",
+							"    pm.expect(userData).to.have.property('company_id');",
+							"    pm.expect(userData).to.have.property('branch_id');",
+							"    pm.expect(userData).to.have.property('department_id');",
+							"    pm.expect(userData).to.have.property('designation_id');",
+							"    pm.expect(userData).to.have.property('user_level');",
+							"    pm.expect(userData).to.have.property('status');",
+							"    pm.expect(userData).to.have.property('created_at');",
+							"    pm.expect(userData).to.have.property('updated_at');",
+							"});",
+							"",
+							"pm.test(\"User object properties have correct data types\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    ",
+							"    pm.expect(userData.id).to.be.a('number');",
+							"    pm.expect(userData.name).to.be.a('string');",
+							"    pm.expect(userData.email).to.be.a('string');",
+							"    pm.expect(userData.phone).to.be.a('string');",
+							"    pm.expect(userData.company_id).to.be.a('number');",
+							"    pm.expect(userData.branch_id).to.be.a('number');",
+							"    pm.expect(userData.department_id).to.be.a('number');",
+							"    pm.expect(userData.designation_id).to.be.a('number');",
+							"    pm.expect(userData.user_level).to.be.a('string');",
+							"    pm.expect(userData.status).to.be.a('string');",
+							"    pm.expect(userData.created_at).to.be.a('string');",
+							"    pm.expect(userData.updated_at).to.be.a('string');",
+							"});",
+							"",
+							"// Validate that created user data matches request data",
+							"pm.test(\"Created user data matches request data\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    ",
+							"    // Validate name matches",
+							"    pm.expect(userData.name).to.eql(requestBody.name);",
+							"    console.log(\"✓ Name matches: \" + userData.name);",
+							"    ",
+							"    // Validate email matches",
+							"    pm.expect(userData.email).to.eql(requestBody.email);",
+							"    console.log(\"✓ Email matches: \" + userData.email);",
+							"    ",
+							"    // Validate phone matches",
+							"    pm.expect(userData.phone).to.eql(requestBody.phone);",
+							"    console.log(\"✓ Phone matches: \" + userData.phone);",
+							"    ",
+							"    // Validate department_id matches",
+							"    pm.expect(userData.department_id).to.eql(requestBody.department_id);",
+							"    console.log(\"✓ Department ID matches: \" + userData.department_id);",
+							"    ",
+							"    // Validate designation_id matches",
+							"    pm.expect(userData.designation_id).to.eql(requestBody.designation_id);",
+							"    console.log(\"✓ Designation ID matches: \" + userData.designation_id);",
+							"    ",
+							"    // Validate branch_id matches",
+							"    pm.expect(userData.branch_id).to.eql(requestBody.branch_id);",
+							"    console.log(\"✓ Branch ID matches: \" + userData.branch_id);",
+							"});",
+							"",
+							"// Validate profile information in the response",
+							"pm.test(\"Profile information is present and valid\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    ",
+							"    pm.expect(userData).to.have.property('profile');",
+							"    pm.expect(userData.profile).to.be.a('string');",
+							"    ",
+							"    // Try to parse profile if it's a JSON string",
+							"    try {",
+							"        var profileData = JSON.parse(userData.profile);",
+							"        pm.expect(profileData).to.be.an('object');",
+							"        console.log(\"✓ Profile data is valid JSON\");",
+							"        ",
+							"        // Log profile contents for debugging",
+							"        console.log(\"Profile data:\", JSON.stringify(profileData, null, 2));",
+							"    } catch (e) {",
+							"        console.log(\"⚠ Profile is not JSON format or empty\");",
+							"    }",
+							"});",
+							"",
+							"// Validate required fields are not null or empty",
+							"pm.test(\"Required fields are not null or empty\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    ",
+							"    pm.expect(userData.id).to.not.be.null;",
+							"    pm.expect(userData.id).to.be.above(0);",
+							"    ",
+							"    pm.expect(userData.name).to.not.be.null;",
+							"    pm.expect(userData.name.length).to.be.above(0);",
+							"    ",
+							"    pm.expect(userData.email).to.not.be.null;",
+							"    pm.expect(userData.email.length).to.be.above(0);",
+							"    pm.expect(userData.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/); // Basic email format validation",
+							"    ",
+							"    pm.expect(userData.phone).to.not.be.null;",
+							"    pm.expect(userData.phone.length).to.be.above(0);",
+							"    ",
+							"    pm.expect(userData.company_id).to.not.be.null;",
+							"    pm.expect(userData.branch_id).to.not.be.null;",
+							"    pm.expect(userData.department_id).to.not.be.null;",
+							"    pm.expect(userData.designation_id).to.not.be.null;",
+							"    ",
+							"    console.log(\"✓ All required fields are valid and not empty\");",
+							"});",
+							"",
+							"pm.test(\"User status and level are set correctly\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    ",
+							"    pm.expect(userData.status).to.be.a('string');",
+							"    pm.expect(userData.status.length).to.be.above(0);",
+							"    ",
+							"    pm.expect(userData.user_level).to.be.a('string');",
+							"    pm.expect(userData.user_level.length).to.be.above(0);",
+							"    ",
+							"    console.log(\"✓ User status: \" + userData.status);",
+							"    console.log(\"✓ User level: \" + userData.user_level);",
+							"});",
+							"",
+							"pm.test(\"Timestamps are valid\", function () {",
+							"    var userData = pm.response.json().user;",
+							"    ",
+							"    pm.expect(userData.created_at).to.not.be.null;",
+							"    pm.expect(userData.updated_at).to.not.be.null;",
+							"    ",
+							"    // Validate timestamp format (basic check)",
+							"    var timestampRegex = /^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$/;",
+							"    pm.expect(userData.created_at).to.match(timestampRegex);",
+							"    pm.expect(userData.updated_at).to.match(timestampRegex);",
+							"    ",
+							"    console.log(\"✓ Created at: \" + userData.created_at);",
+							"    console.log(\"✓ Updated at: \" + userData.updated_at);",
+							"});",
+							"let jsonData = {};",
+							"try {",
+							"    jsonData = pm.response.json();",
+							"} catch (e) {",
+							"    console.log(\"Response is not valid JSON:\", pm.response.text());",
+							"}",
+							"",
+							"// ✅ Success test",
+							"if (pm.response.code === 200) {",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Response has correct structure for success\", function () {",
+							"        pm.expect(jsonData).to.have.property('message');",
+							"        pm.expect(jsonData).to.have.property('status');",
+							"        pm.expect(jsonData.status).to.eql(200);",
+							"    });",
+							"",
+							"    console.log(\"✅ User created successfully!\");",
+							"}",
+							"",
+							"// ❌ Validation Error (422)",
+							"if (pm.response.code === 422) {",
+							"    pm.test(\"Validation error returns 422 status\", function () {",
+							"        pm.expect(pm.response.code).to.eql(422);",
+							"    });",
+							"",
+							"    console.log(\"❌ Validation Error (422)\");",
+							"",
+							"    // Safely display error details",
+							"    if (jsonData.errors) {",
+							"        // Option 1: Pretty-print the entire errors object",
+							"        console.log(\"Error Message:\", JSON.stringify(jsonData.errors, null, 2));",
+							"",
+							"        // Option 2: Show each field-specific message clearly",
+							"        Object.keys(jsonData.errors).forEach(function (key) {",
+							"            console.log(`${key}: ${jsonData.errors[key].join(\", \")}`);",
+							"        });",
+							"    } else if (jsonData.message) {",
+							"        console.log(\"Error Message:\", jsonData.message);",
+							"    } else {",
+							"        console.log(\"Error Message: Unknown error format\");",
+							"    }",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$randomUserName}}\",\n    \"phone\": \"{{$randomPhoneNumber}}\",\n    \"email\": \"{{single_email}}\",\n    \"department_id\": {{department_id}},\n    \"designation_id\": {{designation_id}},\n    \"branch_id\": {{branch_id}},\n    \"profile\": {\n        \"gender\": \"Male\",\n        \"birth_day\": \"1990-01-01\",\n        \"joining_date\": \"2025-09-12\",\n        \"house_address\": \"{{$randomStreetAddress}}\",\n        \"last_working_place\": \"\",\n        \"checkin_time\": \"\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/create-user",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"create-user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create leave policy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response JSON",
+							"const res = pm.response.json();",
+							"",
+							"// 1. Validate status code is 200 or 201",
+							"pm.test(\"Status code is 200 or 201\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							"",
+							"// 2. Validate response time is acceptable (under 2000ms)",
+							"pm.test(\"Response time is less than 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// 3. Validate Content-Type is application/json",
+							"pm.test(\"Response content-type is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// 4. Validate response structure contains required keys",
+							"pm.test(\"Response contains required keys (message, leave_policy, status)\", function () {",
+							"    pm.expect(res).to.have.property(\"message\");",
+							"    pm.expect(res).to.have.property(\"leave_policy\");",
+							"    pm.expect(res).to.have.property(\"status\");",
+							"});",
+							"",
+							"// 5. Validate success message",
+							"pm.test(\"Response contains success message\", function () {",
+							"    pm.expect(res.message).to.be.a(\"string\").and.not.empty;",
+							"    pm.expect(res.message).to.include(\"successfully\");",
+							"});",
+							"",
+							"pm.test(\"Status field matches HTTP status code\", function () {",
+							"    pm.expect(res.status).to.equal(pm.response.code);",
+							"});",
+							"",
+							"// 6. Validate leave_policy object exists and has all required fields",
+							"pm.test(\"Leave policy object contains all required fields\", function () {",
+							"    pm.expect(res.leave_policy).to.be.an(\"object\");",
+							"    pm.expect(res.leave_policy).to.have.all.keys(",
+							"        \"id\", \"name\", \"description\", \"accrual\", \"total_allowence\", ",
+							"        \"maximum_number_of_days\", \"company_id\", \"is_accrues_from_employee_start_date\",",
+							"        \"is_paid_leave\", \"is_active\", \"half_day_enable\", \"enable_carry_forward\",",
+							"        \"created_at\", \"updated_at\"",
+							"    );",
+							"});",
+							"",
+							"// 7. Validate boolean flags have correct values and types",
+							"pm.test(\"Boolean flags are valid\", function () {",
+							"    pm.expect(res.leave_policy.enable_carry_forward).to.be.a(\"boolean\");",
+							"    pm.expect(res.leave_policy.is_paid_leave).to.be.a(\"boolean\");",
+							"    pm.expect(res.leave_policy.is_accrues_from_employee_start_date).to.be.a(\"boolean\");",
+							"    pm.expect(res.leave_policy.half_day_enable).to.be.a(\"boolean\");",
+							"});",
+							"",
+							"// 8. Validate is_active field (should be 1 or 0)",
+							"pm.test(\"is_active field is valid (1 or 0)\", function () {",
+							"    pm.expect(res.leave_policy.is_active).to.be.oneOf([0, 1]);",
+							"});",
+							"",
+							"// 9. Validate name field",
+							"pm.test(\"Name field is a non-empty string\", function () {",
+							"    pm.expect(res.leave_policy.name).to.be.a(\"string\").and.not.empty;",
+							"});",
+							"",
+							"// 10. Validate description field",
+							"pm.test(\"Description field is a non-empty string\", function () {",
+							"    pm.expect(res.leave_policy.description).to.be.a(\"string\").and.not.empty;",
+							"});",
+							"",
+							"// 11. Validate accrual field",
+							"pm.test(\"Accrual field is a non-empty string\", function () {",
+							"    pm.expect(res.leave_policy.accrual).to.be.a(\"string\").and.not.empty;",
+							"});",
+							"",
+							"// 12. Validate total_allowence is a valid number",
+							"pm.test(\"Total allowence is a valid numeric string\", function () {",
+							"    pm.expect(res.leave_policy.total_allowence).to.be.a(\"string\");",
+							"    pm.expect(Number(res.leave_policy.total_allowence)).to.be.a(\"number\").and.not.NaN;",
+							"});",
+							"",
+							"// 13. Validate maximum_number_of_days is a valid number",
+							"pm.test(\"Maximum number of days is a valid numeric string\", function () {",
+							"    pm.expect(res.leave_policy.maximum_number_of_days).to.be.a(\"string\");",
+							"    pm.expect(Number(res.leave_policy.maximum_number_of_days)).to.be.a(\"number\").and.not.NaN;",
+							"});",
+							"",
+							"// 14. Validate company_id exists and is valid",
+							"pm.test(\"Company ID is present and valid in response\", function () {",
+							"    pm.expect(res.leave_policy.company_id).to.exist;",
+							"    pm.expect(res.leave_policy.company_id).to.be.a(\"number\").and.greaterThan(0);",
+							"});",
+							"",
+							"// 15. Validate leave policy ID is generated",
+							"pm.test(\"Leave policy ID is generated and valid\", function () {",
+							"    pm.expect(res.leave_policy.id).to.exist;",
+							"    pm.expect(res.leave_policy.id).to.be.a(\"number\").and.greaterThan(0);",
+							"});",
+							"",
+							"// 16. Validate timestamps are in correct format",
+							"pm.test(\"Created_at timestamp is in valid ISO 8601 format\", function () {",
+							"    pm.expect(res.leave_policy.created_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$/);",
+							"});",
+							"",
+							"pm.test(\"Updated_at timestamp is in valid ISO 8601 format\", function () {",
+							"    pm.expect(res.leave_policy.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$/);",
+							"});",
+							"",
+							"// ============================================================",
+							"// Save important values to environment variables",
+							"// These values will be used in subsequent requests for testing",
+							"// and workflow automation",
+							"// ============================================================",
+							"",
+							"if (res.leave_policy) {",
+							"    // Save leave policy ID",
+							"    pm.environment.set(\"leave_policy_id\", res.leave_policy.id);",
+							"    ",
+							"    // Save leave policy name",
+							"    pm.environment.set(\"leave_policy_name\", res.leave_policy.name);",
+							"    ",
+							"    // Save company ID",
+							"    pm.environment.set(\"company_id\", res.leave_policy.company_id);",
+							"    ",
+							"    // Save total allowence",
+							"    pm.environment.set(\"leave_total_allowence\", res.leave_policy.total_allowence);",
+							"    ",
+							"    // Save maximum number of days",
+							"    pm.environment.set(\"leave_maximum_days\", res.leave_policy.maximum_number_of_days);",
+							"    ",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{leave_policy_name}}\",\n    \"description\": \"casual leave\",\n    \"total_allowence\": \"{{leave_total_allowence}}\",\n    \"maximum_number_of_days\": \"{{leave_maximum_days}}\",\n    \"accrual\": \"yearly\",\n    \"is_accrues_from_employee_start_date\": true,\n    \"enable_carry_forward\": true,\n    \"is_paid_leave\": true,\n    \"half_day_enable\": true,\n    \"leave_count\": 0.5,\n    \"half_day_leave\": [\n        {\n            \"start_time\": \"08:00\",\n            \"end_time\": \"00:00\",\n            \"name\": \"1st half \"\n        }\n    ],\n    \"company_id\": \"60\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/add-leave-policy",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"add-leave-policy"
+					]
+				},
+				"description": "# Create Leave Policy\n\n## Overview\nThis endpoint allows administrators to create a new leave policy for their organization. Leave policies define the rules and allowances for different types of leave (e.g., annual leave, sick leave, casual leave). These policies can then be allocated to employees and used when submitting leave requests.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/add-leave-policy`\n\n## Authentication\nThis endpoint requires authentication via Bearer token:\n- **Header:** `Authorization: Bearer {{access_token}}`\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Authorization | Bearer {{access_token}} | Yes |\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| name | string | Yes | Name of the leave policy (e.g., \"Annual Leave\", \"Sick Leave\") |\n| description | string | Yes | Description of the leave policy |\n| total_allowence | string | Yes | Total number of leave days allowed per accrual period |\n| maximum_number_of_days | string | Yes | Maximum consecutive days that can be taken at once |\n| accrual | string | Yes | Accrual frequency (e.g., \"yearly\", \"monthly\", \"quarterly\") |\n| is_accrues_from_employee_start_date | boolean | Yes | Whether leave accrues from employee's start date (true) or calendar year (false) |\n| enable_carry_forward | boolean | Yes | Whether unused leave can be carried forward to next period |\n| is_paid_leave | boolean | Yes | Whether this is a paid leave type |\n| half_day_enable | boolean | Yes | Whether half-day leave is allowed |\n| leave_count | number | No | Leave count for half-day (typically 0.5) |\n| half_day_leave | array | No | Array of half-day leave time slots (see below) |\n| company_id | string | Yes | ID of the company this policy belongs to |\n\n### Half Day Leave Object Parameters\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| start_time | string | Yes | Start time of the half-day period (HH:MM format) |\n| end_time | string | Yes | End time of the half-day period (HH:MM format) |\n| name | string | Yes | Name/label for the half-day period (e.g., \"1st half\", \"2nd half\") |\n\n### Example Request Body\n```json\n{\n  \"name\": \"{{leave_policy_name}}\",\n  \"description\": \"casual leave\",\n  \"total_allowence\": \"{{leave_total_allowence}}\",\n  \"maximum_number_of_days\": \"{{leave_maximum_days}}\",\n  \"accrual\": \"yearly\",\n  \"is_accrues_from_employee_start_date\": true,\n  \"enable_carry_forward\": true,\n  \"is_paid_leave\": true,\n  \"half_day_enable\": true,\n  \"leave_count\": 0.5,\n  \"half_day_leave\": [\n    {\n      \"start_time\": \"08:00\",\n      \"end_time\": \"00:00\",\n      \"name\": \"1st half\"\n    }\n  ],\n  \"company_id\": \"60\"\n}\n```\n\n## Response\n\n### Success Response (200 OK or 201 Created)\nThe endpoint returns a success message along with the newly created leave policy object.\n\n#### Response Structure\n```json\n{\n  \"message\": \"Leave policy created successfully\",\n  \"status\": 200,\n  \"leave_policy\": {\n    \"id\": number,\n    \"name\": string,\n    \"description\": string,\n    \"accrual\": string,\n    \"total_allowence\": string,\n    \"maximum_number_of_days\": string,\n    \"company_id\": number,\n    \"is_accrues_from_employee_start_date\": boolean,\n    \"is_paid_leave\": boolean,\n    \"is_active\": number,\n    \"half_day_enable\": boolean,\n    \"enable_carry_forward\": boolean,\n    \"created_at\": string,\n    \"updated_at\": string\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| message | string | Confirmation message indicating successful policy creation |\n| status | number | HTTP status code (200 or 201 for success) |\n| leave_policy.id | number | Unique identifier assigned to the newly created leave policy |\n| leave_policy.name | string | Name of the leave policy |\n| leave_policy.description | string | Description of the leave policy |\n| leave_policy.accrual | string | Accrual frequency (yearly, monthly, etc.) |\n| leave_policy.total_allowence | string | Total leave days allowed per period |\n| leave_policy.maximum_number_of_days | string | Maximum consecutive days allowed |\n| leave_policy.company_id | number | ID of the company this policy belongs to |\n| leave_policy.is_accrues_from_employee_start_date | boolean | Whether leave accrues from employee start date |\n| leave_policy.is_paid_leave | boolean | Whether this is paid leave |\n| leave_policy.is_active | number | Policy status (1 = active, 0 = inactive) |\n| leave_policy.half_day_enable | boolean | Whether half-day leave is enabled |\n| leave_policy.enable_carry_forward | boolean | Whether carry forward is enabled |\n| leave_policy.created_at | string | Timestamp when the policy was created (ISO 8601 format) |\n| leave_policy.updated_at | string | Timestamp when the policy was last updated (ISO 8601 format) |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP status code is 200 or 201\n- ✅ Response time is less than 2000ms\n- ✅ Content-Type is application/json\n- ✅ Response contains required keys (message, leave_policy, status)\n- ✅ Success message is present and includes \"successfully\"\n- ✅ Status field matches HTTP status code\n- ✅ Leave policy object contains all required fields\n- ✅ Boolean flags are valid (enable_carry_forward, is_paid_leave, etc.)\n- ✅ is_active field is valid (1 or 0)\n- ✅ Name, description, and accrual fields are non-empty strings\n- ✅ total_allowence and maximum_number_of_days are valid numeric strings\n- ✅ Company ID is present and valid (positive number)\n- ✅ Leave policy ID is generated and valid (positive number)\n- ✅ Timestamps are in valid ISO 8601 format\n\n## Environment Variables Set\nAfter successful execution, the following environment variables are automatically saved:\n- `leave_policy_id` - The newly created leave policy's ID\n- `leave_policy_name` - The leave policy name\n- `company_id` - The company ID\n- `leave_total_allowence` - Total leave allowance\n- `leave_maximum_days` - Maximum number of days\n\n## Usage Notes\n- Only administrators can create leave policies\n- The policy name should be descriptive and unique within the company\n- total_allowence and maximum_number_of_days are stored as strings but should contain numeric values\n- The accrual period determines how often leave is credited to employees\n- Half-day leave configuration is optional but useful for flexible leave management\n- Once created, the policy can be allocated to employees using the leave allocation endpoint\n- The is_active flag allows policies to be enabled or disabled without deletion\n- Carry forward settings determine if unused leave rolls over to the next period\n- Timestamps are automatically generated in ISO 8601 format with microseconds\n\n## Important Considerations\n- Ensure the company_id exists before creating a policy\n- Boolean fields (is_paid_leave, enable_carry_forward, etc.) must be true or false, not strings\n- The half_day_leave array can contain multiple time slots for different half-day periods\n- Leave policies should align with company HR policies and local labor laws"
+			},
+			"response": []
+		},
+		{
+			"name": "Allocate leave",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// 1. Parse the response body",
+							"var jsonData = pm.response.json();",
+							"",
+							"//2. Verify that the API returns a 200 OK status",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"//3. Ensure the response contains the expected fields",
+							"pm.test(\"Response has correct structure\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"status_code\");",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"});",
+							"",
+							"//4. Verify the status_code field in the response body is 200",
+							"pm.test(\"Response status_code is 200\", function () {",
+							"    pm.expect(jsonData.status_code).to.eql(200);",
+							"});",
+							"",
+							"//4. Check that the message indicates successful allocation",
+							"// Handles both new allocation and existing allocation scenarios",
+							"pm.test(\"Response message is valid\", function () {",
+							"    var validMessages = [",
+							"        \"Leave Allocation Created Successfully\",",
+							"        \"Leave Allocation Already Exist and Users Added Successfully\"",
+							"    ];",
+							"    pm.expect(validMessages).to.include(jsonData.message);",
+							"});",
+							"",
+							"",
+							"//5. Ensure the API responds within acceptable time limits",
+							"pm.test(\"Response time is under 2000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"",
+							"//6. Verify the response is in JSON format",
+							"pm.test(\"Content-Type header is application/json\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"",
+							"// 7.Comprehensive check that the allocation was successful",
+							"pm.test(\"Response indicates successful allocation\", function () {",
+							"    pm.expect(jsonData.status_code).to.eql(200);",
+							"    pm.expect(jsonData.message).to.be.a(\"string\");",
+							"    pm.expect(jsonData.message).to.not.be.empty;",
+							"    // Verify message contains success indicators",
+							"    var messageContainsSuccess = jsonData.message.toLowerCase().includes(\"success\");",
+							"    pm.expect(messageContainsSuccess).to.be.true;",
+							"});",
+							"",
+							"",
+							"// Save important values for use in subsequent requests",
+							"// Check if response contains a leave_allocation_id and save it",
+							"if (jsonData.hasOwnProperty(\"leave_allocation_id\")) {",
+							"    pm.environment.set(\"leave_allocation_id\", jsonData.leave_allocation_id);",
+							"    console.log(\"Saved leave_allocation_id:\", jsonData.leave_allocation_id);",
+							"}",
+							"",
+							"// Check if response contains an id field and save it",
+							"if (jsonData.hasOwnProperty(\"id\")) {",
+							"    pm.environment.set(\"leave_allocation_id\", jsonData.id);",
+							"    console.log(\"Saved leave_allocation_id from id field:\", jsonData.id);",
+							"}",
+							"",
+							"// Check if response contains data object with id",
+							"if (jsonData.hasOwnProperty(\"data\") && jsonData.data.hasOwnProperty(\"id\")) {",
+							"    pm.environment.set(\"leave_allocation_id\", jsonData.data.id);",
+							"    console.log(\"✓ Saved leave_allocation_id from data.id:\", jsonData.data.id);",
+							"}",
+							"",
+							"// Log current environment variables related to leave allocation",
+							"console.log(\"- leave_policy_id:\", pm.environment.get(\"leave_policy_id\"));",
+							"console.log(\"- user_id:\", pm.environment.get(\"user_id\"));",
+							"if (pm.environment.get(\"leave_allocation_id\")) {",
+							"    console.log(\"- leave_allocation_id:\", pm.environment.get(\"leave_allocation_id\"));",
+							"}",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"leave_policy_id\": {{leave_policy_id}},\n    \"user_ids\": [\n        {{user_id}}\n    ],\n    \"current_evoluation_start_date\": \"2025-10-11\",\n    \"current_evoluation_end_date\": \"2025-10-12\",\n    \"total_allow\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/leave_allocation/",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"leave_allocation",
+						""
+					]
+				},
+				"description": "# Allocate Leave to Users\n\n## Overview\nThis endpoint allows administrators to allocate a leave policy to one or more users. Once a leave policy is allocated, users can submit leave requests based on that policy. This is a critical step in the leave management workflow that connects leave policies with employees.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/leave_allocation/`\n\n## Authentication\nThis endpoint requires authentication via Bearer token:\n- **Header:** `Authorization: Bearer {{access_token}}`\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Authorization | Bearer {{access_token}} | Yes |\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| leave_policy_id | number | Yes | ID of the leave policy to allocate |\n| user_ids | array | Yes | Array of user IDs to whom the policy will be allocated |\n| current_evoluation_start_date | string | Yes | Start date of the evaluation period (YYYY-MM-DD format) |\n| current_evoluation_end_date | string | Yes | End date of the evaluation period (YYYY-MM-DD format) |\n| total_allow | number | Yes | Total leave days allowed for this allocation period |\n\n### Example Request Body\n```json\n{\n  \"leave_policy_id\": {{leave_policy_id}},\n  \"user_ids\": [\n    {{user_id}}\n  ],\n  \"current_evoluation_start_date\": \"2025-10-11\",\n  \"current_evoluation_end_date\": \"2025-10-12\",\n  \"total_allow\": 20\n}\n```\n\n## Response\n\n### Success Response (200 OK)\nThe endpoint returns a success message confirming the leave allocation.\n\n#### Response Structure\n```json\n{\n  \"status_code\": 200,\n  \"message\": \"Leave Allocation Created Successfully\"\n}\n```\n\n**OR** (if allocation already exists):\n\n```json\n{\n  \"status_code\": 200,\n  \"message\": \"Leave Allocation Already Exist and Users Added Successfully\"\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| status_code | number | HTTP status code (200 for success) |\n| message | string | Confirmation message indicating successful allocation or that users were added to existing allocation |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP status code is 200\n- ✅ Response has correct structure (status_code, message)\n- ✅ Response status_code field is 200\n- ✅ Response message is valid (handles both new allocation and existing allocation scenarios)\n- ✅ Response time is under 2000ms\n- ✅ Content-Type header is application/json\n- ✅ Response indicates successful allocation\n- ✅ Message contains success indicators\n\n## Environment Variables Set\nAfter successful execution, the test script attempts to save the following environment variable if present in the response:\n- `leave_allocation_id` - The leave allocation ID (if returned by the API)\n\nThe script checks multiple possible response structures:\n- Direct `leave_allocation_id` field\n- `id` field\n- `data.id` nested field\n\n## Usage Notes\n- Only administrators can allocate leave policies to users\n- The leave_policy_id must exist and be active before allocation\n- All user_ids in the array must be valid and exist in the system\n- The evaluation period (start and end dates) defines when the allocated leave is valid\n- total_allow specifies how many days are available for this specific allocation period\n- If an allocation already exists for the same policy and period, users are added to the existing allocation\n- Multiple users can be allocated the same policy in a single request by including multiple IDs in the user_ids array\n- The evaluation period should align with the company's leave accrual cycle\n- Dates must be in YYYY-MM-DD format\n\n## Important Considerations\n- Ensure the leave policy exists before attempting allocation\n- The evaluation period should not overlap with existing allocations for the same policy\n- total_allow can be different from the policy's total_allowence to accommodate pro-rated allocations\n- Users must be active employees in the system\n- The allocation creates the leave balance that users can use when submitting leave requests\n- If the allocation already exists, the endpoint will add new users to it rather than creating a duplicate\n\n## Error Responses\n- **401 Unauthorized** - Invalid or expired access token\n- **403 Forbidden** - User lacks permission to allocate leave\n- **404 Not Found** - Leave policy or user IDs not found\n- **422 Unprocessable Entity** - Validation errors (invalid dates, missing required fields)\n- **500 Internal Server Error** - Server-side error"
+			},
+			"response": []
+		},
+		{
+			"name": "Add approval chain",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Verify response status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Check response has expected structure",
+							"pm.test(\"Response has expected structure\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"    pm.expect(jsonData).to.have.property(\"approval_chain\");",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"});",
+							"",
+							"// Test 3: Validate approval chain was created successfully",
+							"pm.test(\"Approval chain created successfully\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"Approval chain added successfully.\");",
+							"});",
+							"",
+							"// Parse response for further tests and variable extraction",
+							"var jsonData = pm.response.json();",
+							"var approvalChain = jsonData.approval_chain;",
+							"",
+							"// Test 4: Verify approval chain has an ID",
+							"pm.test(\"Approval chain has an ID\", function () {",
+							"    pm.expect(approvalChain).to.have.property(\"id\");",
+							"    pm.expect(approvalChain.id).to.be.a(\"number\");",
+							"    pm.expect(approvalChain.id).to.be.above(0);",
+							"});",
+							"",
+							"// Test 5: Verify approvers array is not empty",
+							"pm.test(\"Approvers array is not empty\", function () {",
+							"    pm.expect(approvalChain).to.have.property(\"approvers\");",
+							"    pm.expect(approvalChain.approvers).to.be.an(\"array\");",
+							"    pm.expect(approvalChain.approvers.length).to.be.above(0);",
+							"});",
+							"",
+							"// Test 6: Verify created approval chain name matches request body",
+							"pm.test(\"Approval chain name matches request body\", function () {",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    pm.expect(approvalChain.name).to.eql(requestBody.name);",
+							"});",
+							"",
+							"// Test 7: Verify department matches request body",
+							"pm.test(\"Department matches request body\", function () {",
+							"    var requestBody = JSON.parse(pm.request.body.raw);",
+							"    // Note: Response returns department as string, request has it as number",
+							"    pm.expect(approvalChain.department).to.eql(String(requestBody.department));",
+							"});",
+							"",
+							"// Test 8: Verify approval chain structure completeness",
+							"pm.test(\"Approval chain has all required fields\", function () {",
+							"    pm.expect(approvalChain).to.have.property(\"id\");",
+							"    pm.expect(approvalChain).to.have.property(\"company_id\");",
+							"    pm.expect(approvalChain).to.have.property(\"name\");",
+							"    pm.expect(approvalChain).to.have.property(\"department\");",
+							"    pm.expect(approvalChain).to.have.property(\"approvers\");",
+							"    pm.expect(approvalChain).to.have.property(\"created_at\");",
+							"    pm.expect(approvalChain).to.have.property(\"updated_at\");",
+							"});",
+							"",
+							"// Test 9: Verify approver has required fields",
+							"pm.test(\"Approver has required fields\", function () {",
+							"    var firstApprover = approvalChain.approvers[0];",
+							"    pm.expect(firstApprover).to.have.property(\"id\");",
+							"    pm.expect(firstApprover).to.have.property(\"approval_chain_id\");",
+							"    pm.expect(firstApprover).to.have.property(\"user_id\");",
+							"    pm.expect(firstApprover).to.have.property(\"user\");",
+							"});",
+							"",
+							"//Environment Variable Extraction",
+							"pm.environment.set(\"approval_chain_id\", approvalChain.id);",
+							"pm.environment.set(\"company_id\", approvalChain.company_id);",
+							"pm.environment.set(\"approval_chain_name\", approvalChain.name);",
+							"pm.environment.set(\"approval_chain_department\", approvalChain.department);",
+							"pm.environment.set(\"approver_id\", approvalChain.approvers[0].id);",
+							"pm.environment.set(\"approver_user_id\", approvalChain.approvers[0].user_id);",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{approval_chain_name}}\",\n    \"department\": {{approval_chain_department}},\n    \"approver\": \"[2229]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/add-approval-chain",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"add-approval-chain"
+					]
+				},
+				"description": "# Add Approval Chain\n\n## Overview\nThis endpoint allows administrators to create a new approval chain for leave requests. An approval chain defines the hierarchy of approvers who must review and approve leave requests for a specific department. This is essential for implementing multi-level approval workflows in the leave management system.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/add-approval-chain`\n\n## Authentication\nThis endpoint requires authentication via Bearer token:\n- **Header:** `Authorization: Bearer {{access_token}}`\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Authorization | Bearer {{access_token}} | Yes |\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| name | string | Yes | Name of the approval chain (e.g., \"Engineering Approval Chain\") |\n| department | number | Yes | Department ID for which this approval chain applies |\n| approver | string | Yes | JSON string array of user IDs who will be approvers (e.g., \"[2229]\" or \"[2229, 2230]\") |\n\n### Example Request Body\n```json\n{\n  \"name\": \"{{approval_chain_name}}\",\n  \"department\": {{approval_chain_department}},\n  \"approver\": \"[2229]\"\n}\n```\n\n## Response\n\n### Success Response (200 OK)\nThe endpoint returns a success message along with the newly created approval chain object.\n\n#### Response Structure\n```json\n{\n  \"message\": \"Approval chain added successfully.\",\n  \"status\": 200,\n  \"approval_chain\": {\n    \"id\": number,\n    \"company_id\": number,\n    \"name\": string,\n    \"department\": string,\n    \"approvers\": [\n      {\n        \"id\": number,\n        \"approval_chain_id\": number,\n        \"user_id\": number,\n        \"user\": {\n          \"id\": number,\n          \"name\": string,\n          \"email\": string,\n          \"phone\": string,\n          \"user_level\": string\n        },\n        \"created_at\": string,\n        \"updated_at\": string\n      }\n    ],\n    \"created_at\": string,\n    \"updated_at\": string\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| message | string | Confirmation message indicating successful creation |\n| status | number | HTTP status code (200 for success) |\n| approval_chain.id | number | Unique identifier of the newly created approval chain |\n| approval_chain.company_id | number | ID of the company this approval chain belongs to |\n| approval_chain.name | string | Name of the approval chain |\n| approval_chain.department | string | Department ID (returned as string) |\n| approval_chain.approvers | array | Array of approver objects with user details |\n| approval_chain.approvers[].id | number | Unique identifier of the approver record |\n| approval_chain.approvers[].approval_chain_id | number | ID of the approval chain this approver belongs to |\n| approval_chain.approvers[].user_id | number | ID of the user who is an approver |\n| approval_chain.approvers[].user | object | User details including name, email, phone, and user_level |\n| approval_chain.created_at | string | Timestamp when the approval chain was created |\n| approval_chain.updated_at | string | Timestamp when the approval chain was last updated |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP status code is 200\n- ✅ Response has expected structure (message, approval_chain, status)\n- ✅ Approval chain created successfully message\n- ✅ Approval chain has a valid ID (positive number)\n- ✅ Approvers array is not empty\n- ✅ Approval chain name matches request body\n- ✅ Department matches request body\n- ✅ Approval chain has all required fields (id, company_id, name, department, approvers, timestamps)\n- ✅ Approver has required fields (id, approval_chain_id, user_id, user)\n\n## Environment Variables Set\nAfter successful execution, the following environment variables are automatically saved:\n- `approval_chain_id` - The newly created approval chain's ID\n- `company_id` - The company ID\n- `approval_chain_name` - The approval chain name\n- `approval_chain_department` - The department ID\n- `approver_id` - The first approver's ID\n- `approver_user_id` - The first approver's user ID\n\n## Usage Notes\n- Only administrators can create approval chains\n- The approval chain name should be descriptive and unique within the company\n- The department parameter must be a valid department ID that exists in the system\n- The approver parameter must be a JSON string array format (e.g., \"[2229]\" or \"[2229, 2230, 2231]\")\n- Multiple approvers can be added in a hierarchical order\n- The order of approvers in the array determines the approval sequence\n- Each approver must be a valid user ID in the system\n- The department field is sent as a number but returned as a string in the response\n- Once created, the approval chain can be updated or have additional employees added to it\n- Approval chains are linked to departments, so all leave requests from that department will follow this chain\n\n## Important Considerations\n- Ensure all user IDs in the approver array exist and are active users\n- The department must exist before creating an approval chain for it\n- Approvers should have appropriate permissions to approve leave requests\n- The approval chain defines the workflow for leave request approvals\n- If multiple approvers are specified, they typically approve in sequence\n- The approver array format is critical - it must be a JSON string, not a direct array\n\n## Error Responses\n- **401 Unauthorized** - Invalid or expired access token\n- **403 Forbidden** - User lacks permission to create approval chains\n- **404 Not Found** - Department or user IDs not found\n- **422 Unprocessable Entity** - Validation errors (invalid format, missing required fields)\n- **500 Internal Server Error** - Server-side error"
+			},
+			"response": []
+		},
+		{
+			"name": "Add employees to approval chain",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Test 1: Verify response status is 200",
+							"pm.test(\"✅ Status code is 200 - Success\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Verify response time is acceptable",
+							"pm.test(\"✅ Response time is acceptable (< 2000ms)\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"// Test 3: Verify Content-Type header",
+							"pm.test(\"✅ Response has correct Content-Type\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+							"});",
+							"",
+							"// Test 4: Validate response structure",
+							"pm.test(\"✅ Response has required structure\", function () {",
+							"    pm.expect(jsonData).to.be.an('object');",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('approval_chain');",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"});",
+							"",
+							"// Test 5: Verify success message",
+							"pm.test(\"✅ Success message is present\", function () {",
+							"    pm.expect(jsonData.message).to.be.a('string');",
+							"    pm.expect(jsonData.message).to.include('successfully');",
+							"});",
+							"",
+							"// Test 6: Verify status field equals 200",
+							"pm.test(\"✅ Status field equals 200\", function () {",
+							"    pm.expect(jsonData.status).to.equal(200);",
+							"});",
+							"",
+							"// Test 7: Validate approval chain data structure",
+							"pm.test(\"✅ Approval chain has required fields\", function () {",
+							"    const approvalChain = jsonData.approval_chain;",
+							"    pm.expect(approvalChain).to.be.an('object');",
+							"    pm.expect(approvalChain).to.have.property('id');",
+							"    pm.expect(approvalChain).to.have.property('company_id');",
+							"    pm.expect(approvalChain).to.have.property('name');",
+							"    pm.expect(approvalChain).to.have.property('department');",
+							"    pm.expect(approvalChain).to.have.property('employees');",
+							"    pm.expect(approvalChain).to.have.property('approvers');",
+							"});",
+							"",
+							"// Test 8: Verify all 3 employees were added",
+							"pm.test(\"✅ All 3 employees were added to approval chain\", function () {",
+							"    const employees = jsonData.approval_chain.employees;",
+							"    pm.expect(employees).to.be.an('array');",
+							"    pm.expect(employees).to.have.lengthOf(3);",
+							"});",
+							"",
+							"// Test 9: Validate employee data structure",
+							"pm.test(\"✅ Each employee has required fields\", function () {",
+							"    const employees = jsonData.approval_chain.employees;",
+							"    ",
+							"    employees.forEach((employee, index) => {",
+							"        pm.expect(employee, `Employee ${index + 1} is an object`).to.be.an('object');",
+							"        pm.expect(employee, `Employee ${index + 1} has id`).to.have.property('id');",
+							"        pm.expect(employee, `Employee ${index + 1} has approval_chain_id`).to.have.property('approval_chain_id');",
+							"        pm.expect(employee, `Employee ${index + 1} has user_id`).to.have.property('user_id');",
+							"        pm.expect(employee, `Employee ${index + 1} has user object`).to.have.property('user');",
+							"        pm.expect(employee, `Employee ${index + 1} has created_at`).to.have.property('created_at');",
+							"        pm.expect(employee, `Employee ${index + 1} has updated_at`).to.have.property('updated_at');",
+							"    });",
+							"});",
+							"",
+							"// Test 10: Verify employee IDs match the request",
+							"pm.test(\"✅ Employee user IDs match the request\", function () {",
+							"    const employees = jsonData.approval_chain.employees;",
+							"    const requestedEmployeeIds = [2292, 2293, 2294];",
+							"    const responseEmployeeIds = employees.map(emp => emp.user_id);",
+							"    ",
+							"    requestedEmployeeIds.forEach(requestedId => {",
+							"        pm.expect(responseEmployeeIds, `User ID ${requestedId} is in response`).to.include(requestedId);",
+							"    });",
+							"});",
+							"",
+							"// Test 11: Verify approval chain ID consistency",
+							"pm.test(\"✅ All employees have correct approval_chain_id\", function () {",
+							"    const approvalChainId = jsonData.approval_chain.id;",
+							"    const employees = jsonData.approval_chain.employees;",
+							"    ",
+							"    employees.forEach((employee, index) => {",
+							"        pm.expect(employee.approval_chain_id, `Employee ${index + 1} has correct approval_chain_id`).to.equal(approvalChainId);",
+							"    });",
+							"});",
+							"",
+							"// Test 12: Validate user object structure within each employee",
+							"pm.test(\"✅ Each employee's user object has required fields\", function () {",
+							"    const employees = jsonData.approval_chain.employees;",
+							"    ",
+							"    employees.forEach((employee, index) => {",
+							"        const user = employee.user;",
+							"        pm.expect(user, `Employee ${index + 1} user object exists`).to.be.an('object');",
+							"        pm.expect(user, `Employee ${index + 1} user has id`).to.have.property('id');",
+							"        pm.expect(user, `Employee ${index + 1} user has name`).to.have.property('name');",
+							"        pm.expect(user, `Employee ${index + 1} user has email`).to.have.property('email');",
+							"        pm.expect(user, `Employee ${index + 1} user has company_id`).to.have.property('company_id');",
+							"        pm.expect(user, `Employee ${index + 1} user has user_level`).to.have.property('user_level');",
+							"        pm.expect(user, `Employee ${index + 1} user has status`).to.have.property('status');",
+							"    });",
+							"});",
+							"",
+							"// Test 13: Validate data types",
+							"pm.test(\"✅ Data types are correct\", function () {",
+							"    const approvalChain = jsonData.approval_chain;",
+							"    pm.expect(approvalChain.id).to.be.a('number');",
+							"    pm.expect(approvalChain.company_id).to.be.a('number');",
+							"    pm.expect(approvalChain.name).to.be.a('string');",
+							"    pm.expect(approvalChain.department).to.be.a('string');",
+							"    pm.expect(approvalChain.employees).to.be.an('array');",
+							"    pm.expect(approvalChain.approvers).to.be.an('array');",
+							"});",
+							"",
+							"// Save important data to environment variables for subsequent requests",
+							"console.log(\"💾 Saving data to environment variables...\");",
+							"",
+							"// Save approval chain data",
+							"pm.environment.set(\"approval_chain_id\", jsonData.approval_chain.id.toString());",
+							"pm.environment.set(\"approval_chain_name\", jsonData.approval_chain.name);",
+							"pm.environment.set(\"approval_chain_department\", jsonData.approval_chain.department);",
+							"pm.environment.set(\"company_id\", jsonData.approval_chain.company_id.toString());",
+							"",
+							"// Save employee data",
+							"const employees = jsonData.approval_chain.employees;",
+							"",
+							"// Save first employee details",
+							"pm.environment.set(\"employee_1_id\", employees[0].id.toString());",
+							"pm.environment.set(\"employee_1_user_id\", employees[0].user_id.toString());",
+							"pm.environment.set(\"employee_1_name\", employees[0].user.name);",
+							"pm.environment.set(\"employee_1_email\", employees[0].user.email);",
+							"",
+							"// Save second employee details",
+							"pm.environment.set(\"employee_2_id\", employees[1].id.toString());",
+							"pm.environment.set(\"employee_2_user_id\", employees[1].user_id.toString());",
+							"pm.environment.set(\"employee_2_name\", employees[1].user.name);",
+							"pm.environment.set(\"employee_2_email\", employees[1].user.email);",
+							"",
+							"// Save third employee details",
+							"pm.environment.set(\"employee_3_id\", employees[2].id.toString());",
+							"pm.environment.set(\"employee_3_user_id\", employees[2].user_id.toString());",
+							"pm.environment.set(\"employee_3_name\", employees[2].user.name);",
+							"pm.environment.set(\"employee_3_email\", employees[2].user.email);",
+							"",
+							"// Save all employee IDs as comma-separated string for bulk operations",
+							"const employeeIds = employees.map(emp => emp.id).join(',');",
+							"const userIds = employees.map(emp => emp.user_id).join(',');",
+							"pm.environment.set(\"added_employee_ids\", employeeIds);",
+							"pm.environment.set(\"added_user_ids\", userIds);",
+							"",
+							"// Save employee count",
+							"pm.environment.set(\"employee_count\", employees.length.toString());",
+							"",
+							"// Save approver information",
+							"const firstApprover = jsonData.approval_chain.approvers[0];",
+							"pm.environment.set(\"approver_id\", firstApprover.id.toString());",
+							"pm.environment.set(\"approver_user_id\", firstApprover.user_id.toString());",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"employees\": \"[2292,2293,2294]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/update-approval-chain-employees/{{approval_chain_id}}",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"update-approval-chain-employees",
+						"{{approval_chain_id}}"
+					]
+				},
+				"description": "# Add Employees to Approval Chain\n\n## Overview\nThis endpoint allows administrators to add employees to an existing approval chain. This associates specific employees with an approval workflow, ensuring that their leave requests will be routed through the designated approval chain for their department.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/update-approval-chain-employees/{approval_chain_id}`\n- **Example:** `{{Base_url}}/api/update-approval-chain-employees/34`\n\n## Authentication\nThis endpoint requires authentication via Bearer token:\n- **Header:** `Authorization: Bearer {{access_token}}`\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Authorization | Bearer {{access_token}} | Yes |\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Path Parameters\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| approval_chain_id | integer | The unique identifier of the approval chain to which employees will be added (e.g., 34) |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| employees | string | Yes | JSON string array of employee user IDs to add to the approval chain (e.g., \"[2095,370,356]\") |\n\n### Example Request Body\n```json\n{\n  \"employees\": \"[2095,370,356]\"\n}\n```\n\n## Response\n\n### Success Response (200 OK)\nThe endpoint returns a success message confirming that employees were added to the approval chain.\n\n#### Response Structure\n```json\n{\n  \"message\": \"Employees added successfully to approval chain\",\n  \"status\": 200,\n  \"data\": {\n    \"approval_chain\": object,\n    \"employees\": array\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| message | string | Confirmation message indicating successful operation |\n| status | number | HTTP status code (200 for success) |\n| data | object | Optional object containing approval chain and employee details |\n| data.approval_chain | object | The updated approval chain information |\n| data.employees | array | Array of employee objects that were added |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP status code is 200 (Success)\n- ✅ Response time is acceptable (< 2000ms)\n- ✅ Response has correct Content-Type (application/json)\n- ✅ Response has required structure (message, status)\n- ✅ Success message is present and indicates successful operation\n- ✅ Status field equals 200\n- ✅ Response contains approval chain data (if present)\n- ✅ Employees array is valid (if returned)\n- ✅ Error scenario handling for 422 Unprocessable Content\n\n## Error Handling\nThe test scripts also handle error scenarios:\n- **422 Unprocessable Content** - Authorization or validation errors\n  - Validates error response structure\n  - Checks for appropriate error messages\n  - Logs error details for debugging\n\n## Usage Notes\n- Only administrators can add employees to approval chains\n- The approval_chain_id in the URL path must correspond to an existing approval chain\n- The employees parameter must be a JSON string array format (e.g., \"[2095,370,356]\")\n- All employee user IDs must be valid and exist in the system\n- Employees must belong to the same department as the approval chain\n- Multiple employees can be added in a single request\n- If an employee is already part of the approval chain, they may be skipped or the operation may succeed without duplication\n- This operation associates employees with the approval workflow, not the approvers themselves\n\n## Important Considerations\n- Ensure all employee user IDs in the array exist and are active users\n- The approval chain must exist before adding employees to it\n- Employees should belong to the department associated with the approval chain\n- The employees array format is critical - it must be a JSON string, not a direct array\n- Adding employees to an approval chain determines which approval workflow their leave requests will follow\n- This is different from adding approvers - this adds the employees whose requests will be approved\n\n## Error Responses\n- **401 Unauthorized** - Invalid or expired access token\n- **403 Forbidden** - User lacks permission to modify approval chains\n- **404 Not Found** - Approval chain ID not found\n- **422 Unprocessable Entity** - Validation errors (invalid employee IDs, authorization issues, missing required fields)\n- **500 Internal Server Error** - Server-side error\n\n## Workflow Context\nThis endpoint is typically used after:\n1. Creating an approval chain with \"Add approval chain\"\n2. And before employees start submitting leave requests\n\nThis ensures that when employees submit leave requests, the system knows which approval chain to use for routing the request to the appropriate approvers."
+			},
+			"response": []
+		},
+		{
+			"name": "Update approval chain",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response",
+							"var jsonData = pm.response.json();",
+							"",
+							"// Test 1: Verify response status is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Validate response structure - top level fields",
+							"pm.test(\"Response has required top-level fields\", function () {",
+							"    pm.expect(jsonData).to.have.property('message');",
+							"    pm.expect(jsonData).to.have.property('approval_chain');",
+							"    pm.expect(jsonData).to.have.property('status');",
+							"});",
+							"",
+							"// Test 3: Check that the approval chain was updated successfully",
+							"pm.test(\"Approval chain updated successfully\", function () {",
+							"    pm.expect(jsonData.message).to.eql(\"Approval chain updated successfully.\");",
+							"    pm.expect(jsonData.status).to.eql(200);",
+							"});",
+							"",
+							"// Test 4: Validate approval_chain object structure",
+							"pm.test(\"Approval chain object has required fields\", function () {",
+							"    pm.expect(jsonData.approval_chain).to.have.property('id');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('company_id');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('name');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('department');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('created_at');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('updated_at');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('approvers');",
+							"    pm.expect(jsonData.approval_chain).to.have.property('employees');",
+							"});",
+							"",
+							"// Test 5: Verify the approval chain name and department",
+							"pm.test(\"Approval chain name and department are correct\", function () {",
+							"    pm.expect(jsonData.approval_chain.name).to.be.a('string');",
+							"    pm.expect(jsonData.approval_chain.department).to.be.a('string');",
+							"    pm.expect(jsonData.approval_chain.name).to.eql(\"test_approval_flow\");",
+							"    pm.expect(jsonData.approval_chain.department).to.eql(\"103\");",
+							"});",
+							"",
+							"// Test 6: Validate approvers array exists and has correct structure",
+							"pm.test(\"Approvers array exists and has valid structure\", function () {",
+							"    pm.expect(jsonData.approval_chain.approvers).to.be.an('array');",
+							"    pm.expect(jsonData.approval_chain.approvers.length).to.be.greaterThan(0);",
+							"});",
+							"",
+							"// Test 7: Validate each approver's data structure",
+							"pm.test(\"Each approver has required fields\", function () {",
+							"    jsonData.approval_chain.approvers.forEach(function(approver) {",
+							"        pm.expect(approver).to.have.property('id');",
+							"        pm.expect(approver).to.have.property('approval_chain_id');",
+							"        pm.expect(approver).to.have.property('user_id');",
+							"        pm.expect(approver).to.have.property('created_at');",
+							"        pm.expect(approver).to.have.property('updated_at');",
+							"        pm.expect(approver).to.have.property('user');",
+							"        ",
+							"        // Validate user object within approver",
+							"        pm.expect(approver.user).to.have.property('id');",
+							"        pm.expect(approver.user).to.have.property('name');",
+							"        pm.expect(approver.user).to.have.property('email');",
+							"        pm.expect(approver.user).to.have.property('phone');",
+							"    });",
+							"});",
+							"",
+							"// Test 8: Validate approver user_id matches approval chain",
+							"pm.test(\"Approver approval_chain_id matches approval chain id\", function () {",
+							"    jsonData.approval_chain.approvers.forEach(function(approver) {",
+							"        pm.expect(approver.approval_chain_id).to.eql(jsonData.approval_chain.id);",
+							"    });",
+							"});",
+							"",
+							"// Test 9: Validate employees array exists and has correct structure",
+							"pm.test(\"Employees array exists and has valid structure\", function () {",
+							"    pm.expect(jsonData.approval_chain.employees).to.be.an('array');",
+							"});",
+							"",
+							"// Test 10: Validate each employee's data structure",
+							"pm.test(\"Each employee has required fields\", function () {",
+							"    jsonData.approval_chain.employees.forEach(function(employee) {",
+							"        pm.expect(employee).to.have.property('id');",
+							"        pm.expect(employee).to.have.property('approval_chain_id');",
+							"        pm.expect(employee).to.have.property('user_id');",
+							"        pm.expect(employee).to.have.property('user');",
+							"        ",
+							"        // Validate user object within employee",
+							"        pm.expect(employee.user).to.have.property('id');",
+							"        pm.expect(employee.user).to.have.property('name');",
+							"        pm.expect(employee.user).to.have.property('email');",
+							"    });",
+							"});",
+							"",
+							"// Test 11: Validate employee approval_chain_id matches approval chain",
+							"pm.test(\"Employee approval_chain_id matches approval chain id\", function () {",
+							"    jsonData.approval_chain.employees.forEach(function(employee) {",
+							"        pm.expect(employee.approval_chain_id).to.eql(jsonData.approval_chain.id);",
+							"    });",
+							"});",
+							"",
+							"// Test 12: Validate data types",
+							"pm.test(\"Data types are correct\", function () {",
+							"    pm.expect(jsonData.approval_chain.id).to.be.a('number');",
+							"    pm.expect(jsonData.approval_chain.company_id).to.be.a('number');",
+							"    pm.expect(jsonData.approval_chain.name).to.be.a('string');",
+							"    pm.expect(jsonData.approval_chain.department).to.be.a('string');",
+							"    pm.expect(jsonData.status).to.be.a('number');",
+							"});",
+							"",
+							"// Test 13: Validate timestamp formats",
+							"pm.test(\"Timestamps are in valid format\", function () {",
+							"    pm.expect(jsonData.approval_chain.created_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"    pm.expect(jsonData.approval_chain.updated_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/);",
+							"});",
+							"",
+							"// ============================================",
+							"// SAVE DATA TO ENVIRONMENT VARIABLES",
+							"// NO CONDITIONAL STATEMENTS - DIRECT ASSIGNMENT",
+							"// ============================================",
+							"",
+							"// Save approval chain data",
+							"pm.environment.set(\"approval_chain_id\", jsonData.approval_chain.id.toString());",
+							"pm.environment.set(\"approval_chain_name\", jsonData.approval_chain.name);",
+							"pm.environment.set(\"approval_chain_department\", jsonData.approval_chain.department);",
+							"pm.environment.set(\"company_id\", jsonData.approval_chain.company_id.toString());",
+							"pm.environment.set(\"approval_chain_created_at\", jsonData.approval_chain.created_at);",
+							"pm.environment.set(\"approval_chain_updated_at\", jsonData.approval_chain.updated_at);",
+							"",
+							"// Save first approver data (primary approver)",
+							"pm.environment.set(\"approver_id\", jsonData.approval_chain.approvers[0].id.toString());",
+							"pm.environment.set(\"approver_user_id\", jsonData.approval_chain.approvers[0].user_id.toString());",
+							"pm.environment.set(\"approver_name\", jsonData.approval_chain.approvers[0].user.name);",
+							"pm.environment.set(\"approver_email\", jsonData.approval_chain.approvers[0].user.email);",
+							"pm.environment.set(\"approver_phone\", jsonData.approval_chain.approvers[0].user.phone);",
+							"pm.environment.set(\"approver_user_level\", jsonData.approval_chain.approvers[0].user.user_level);",
+							"pm.environment.set(\"approver_company_id\", jsonData.approval_chain.approvers[0].user.company_id.toString());",
+							"",
+							"// Save approvers count",
+							"pm.environment.set(\"approvers_count\", jsonData.approval_chain.approvers.length.toString());",
+							"",
+							"// Save all approver IDs as comma-separated string",
+							"var approverIds = jsonData.approval_chain.approvers.map(function(a) { return a.id; }).join(',');",
+							"pm.environment.set(\"all_approver_ids\", approverIds);",
+							"",
+							"// Save all approver user IDs as comma-separated string",
+							"var approverUserIds = jsonData.approval_chain.approvers.map(function(a) { return a.user_id; }).join(',');",
+							"pm.environment.set(\"all_approver_user_ids\", approverUserIds);",
+							"",
+							"// Save employees count",
+							"pm.environment.set(\"employees_count\", jsonData.approval_chain.employees.length.toString());",
+							"",
+							"// Save first employee data",
+							"pm.environment.set(\"employee_1_id\", jsonData.approval_chain.employees[0].id.toString());",
+							"pm.environment.set(\"employee_1_user_id\", jsonData.approval_chain.employees[0].user_id.toString());",
+							"pm.environment.set(\"employee_1_name\", jsonData.approval_chain.employees[0].user.name);",
+							"pm.environment.set(\"employee_1_email\", jsonData.approval_chain.employees[0].user.email);",
+							"pm.environment.set(\"employee_1_phone\", jsonData.approval_chain.employees[0].user.phone);",
+							"",
+							"// Save second employee data",
+							"pm.environment.set(\"employee_2_id\", jsonData.approval_chain.employees[1].id.toString());",
+							"pm.environment.set(\"employee_2_user_id\", jsonData.approval_chain.employees[1].user_id.toString());",
+							"pm.environment.set(\"employee_2_name\", jsonData.approval_chain.employees[1].user.name);",
+							"pm.environment.set(\"employee_2_email\", jsonData.approval_chain.employees[1].user.email);",
+							"pm.environment.set(\"employee_2_phone\", jsonData.approval_chain.employees[1].user.phone);",
+							"",
+							"// Save third employee data",
+							"pm.environment.set(\"employee_3_id\", jsonData.approval_chain.employees[2].id.toString());",
+							"pm.environment.set(\"employee_3_user_id\", jsonData.approval_chain.employees[2].user_id.toString());",
+							"pm.environment.set(\"employee_3_name\", jsonData.approval_chain.employees[2].user.name);",
+							"pm.environment.set(\"employee_3_email\", jsonData.approval_chain.employees[2].user.email);",
+							"pm.environment.set(\"employee_3_phone\", jsonData.approval_chain.employees[2].user.phone);",
+							"",
+							"// Save all employee IDs as comma-separated string",
+							"var employeeIds = jsonData.approval_chain.employees.map(function(e) { return e.id; }).join(',');",
+							"pm.environment.set(\"all_employee_ids\", employeeIds);",
+							"",
+							"// Save all employee user IDs as comma-separated string",
+							"var employeeUserIds = jsonData.approval_chain.employees.map(function(e) { return e.user_id; }).join(',');",
+							"pm.environment.set(\"all_employee_user_ids\", employeeUserIds);",
+							"",
+							"// Save all employee names as comma-separated string",
+							"var employeeNames = jsonData.approval_chain.employees.map(function(e) { return e.user.name; }).join(',');",
+							"pm.environment.set(\"all_employee_names\", employeeNames);",
+							"",
+							"// Save all employee emails as comma-separated string",
+							"var employeeEmails = jsonData.approval_chain.employees.map(function(e) { return e.user.email; }).join(',');",
+							"pm.environment.set(\"all_employee_emails\", employeeEmails);",
+							"",
+							"// Save response message and status",
+							"pm.environment.set(\"update_approval_chain_message\", jsonData.message);",
+							"pm.environment.set(\"update_approval_chain_status\", jsonData.status.toString());",
+							"",
+							"console.log(\"✓ All environment variables saved successfully without conditional statements\");",
+							"console.log(\"✓ Approval Chain ID: \" + jsonData.approval_chain.id);",
+							"console.log(\"✓ Approvers Count: \" + jsonData.approval_chain.approvers.length);",
+							"console.log(\"✓ Employees Count: \" + jsonData.approval_chain.employees.length);"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"test_approval_flow\",\n    \"department\": \"103\",\n    \"approver\": \"[2229]\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/update-approval-chain/{{approval_chain_id}}",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"update-approval-chain",
+						"{{approval_chain_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create leave request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse response JSON",
+							"const response = pm.response.json();",
+							"",
+							"// ✅ 1. Check response status code first",
+							"pm.test(\"Response has a valid status code\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404, 422, 500]);",
+							"});",
+							"",
+							"// ✅ 2. Handle SUCCESS responses (status 200)",
+							"if (pm.response.code === 200 && response.status === 200) {",
+							"    ",
+							"    pm.test(\"Status code is 200\", function () {",
+							"        pm.response.to.have.status(200);",
+							"    });",
+							"",
+							"    pm.test(\"Response status field is 200\", function () {",
+							"        pm.expect(response.status).to.eql(200);",
+							"    });",
+							"",
+							"    pm.test(\"Message confirms successful leave request\", function () {",
+							"        pm.expect(response.message).to.include(\"Leave request sent successfully\");",
+							"    });",
+							"",
+							"    // ✅ Leave request object presence",
+							"    pm.test(\"Response contains leave_request object\", function () {",
+							"        pm.expect(response).to.have.property(\"leave_request\");",
+							"    });",
+							"",
+							"    // ✅ Validate essential leave request fields (only when leave_request exists)",
+							"    if (response.leave_request) {",
+							"        pm.test(\"Leave request has all required fields\", function () {",
+							"            const leave = response.leave_request;",
+							"            pm.expect(leave).to.have.property(\"user_id\");",
+							"            pm.expect(leave).to.have.property(\"start_date\");",
+							"            pm.expect(leave).to.have.property(\"end_date\");",
+							"            pm.expect(leave).to.have.property(\"reason\");",
+							"            pm.expect(leave).to.have.property(\"leave_type\");",
+							"            pm.expect(leave).to.have.property(\"leave_policy_id\");",
+							"            pm.expect(leave).to.have.property(\"status\");",
+							"            pm.expect(leave).to.have.property(\"latitude\");",
+							"            pm.expect(leave).to.have.property(\"longitude\");",
+							"            pm.expect(leave).to.have.property(\"id\");",
+							"        });",
+							"",
+							"        // ✅ Field value checks",
+							"        pm.test(\"Leave reason matches request\", function () {",
+							"            pm.expect(response.leave_request.reason).to.eql(\"Test reason\");",
+							"        });",
+							"",
+							"        pm.test(\"Leave type is Causal Leave\", function () {",
+							"            pm.expect(response.leave_request.leave_type).to.eql(\"Causal Leave\");",
+							"        });",
+							"",
+							"        pm.test(\"Leave policy ID is correct\", function () {",
+							"            pm.expect(response.leave_request.leave_policy_id).to.eql(116);",
+							"        });",
+							"",
+							"        pm.test(\"Leave status is set\", function () {",
+							"            pm.expect(response.leave_request.status).to.exist;",
+							"        });",
+							"",
+							"        pm.test(\"Latitude and longitude are present\", function () {",
+							"            pm.expect(response.leave_request.latitude).to.exist;",
+							"            pm.expect(response.leave_request.longitude).to.exist;",
+							"        });",
+							"    }",
+							"}",
+							"",
+							"// ✅ 3. Handle DUPLICATE LEAVE REQUEST error (status 422)",
+							"if (pm.response.code === 422 && response.status === 422) {",
+							"    ",
+							"    pm.test(\"Status code is 422\", function () {",
+							"        pm.response.to.have.status(422);",
+							"    });",
+							"",
+							"    pm.test(\"Response status field is 422\", function () {",
+							"        pm.expect(response.status).to.eql(422);",
+							"    });",
+							"",
+							"    pm.test(\"Message field exists\", function () {",
+							"        pm.expect(response).to.have.property(\"message\");",
+							"        pm.expect(response.message).to.be.a(\"string\");",
+							"    });",
+							"",
+							"    pm.test(\"Message indicates duplicate leave request\", function () {",
+							"        pm.expect(response.message).to.include(\"already have a leave request\");",
+							"    });",
+							"",
+							"    pm.test(\"Error response structure is correct\", function () {",
+							"        pm.expect(response).to.have.property(\"status\");",
+							"        pm.expect(response).to.have.property(\"message\");",
+							"        // Ensure no leave_request object is present in error response",
+							"        pm.expect(response).to.not.have.property(\"leave_request\");",
+							"    });",
+							"",
+							"//Save Environment variable",
+							"// Extract and save leave request ID",
+							"pm.environment.set(\"leave_request_id\", pm.response.json().leave_request.id);",
+							"",
+							"// Extract and save leave status",
+							"pm.environment.set(\"leave_status\", pm.response.json().leave_request.status);",
+							"",
+							"// Extract and save user ID",
+							"pm.environment.set(\"leave_user_id\", pm.response.json().leave_request.user_id);",
+							"",
+							"// Extract and save company ID",
+							"pm.environment.set(\"company_id\", pm.response.json().leave_request.company_id);",
+							"",
+							"// Extract and save leave type",
+							"pm.environment.set(\"leave_type\", pm.response.json().leave_request.leave_type);",
+							"",
+							"// Extract and save leave policy ID",
+							"pm.environment.set(\"leave_policy_id\", pm.response.json().leave_request.leave_policy_id);",
+							"",
+							"// Extract and save approver list (first approver)",
+							"pm.environment.set(\"approver_id\", pm.response.json().leave_request.approver_list[0]);",
+							"",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"start_date\": \"2025-10-04\",\n  \"end_date\": \"2025-10-04\",\n  \"reason\": \"Test reason\",\n  \"leave_type\": \"Causal Leave\",\n  \"leave_policy_id\": 116,\n  \"half_day_leave_id\": \"\",\n  \"latitude\": 23.787225,\n  \"longitude\": 90.361073\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/add-leave-request",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"add-leave-request"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leave requests",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const res = pm.response.json();",
+							"",
+							"// ============================================================",
+							"// ✅ 1. RESPONSE STATUS & PERFORMANCE VALIDATION",
+							"// ============================================================",
+							"",
+							"pm.test(\"Status code is 200 (Success)\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response time is acceptable (< 2000ms)\", () => {",
+							"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"// ============================================================",
+							"// ✅ 2. RESPONSE STRUCTURE VALIDATION",
+							"// ============================================================",
+							"",
+							"pm.test(\"Response has all required top-level properties\", () => {",
+							"    pm.expect(res).to.have.property(\"message\");",
+							"    pm.expect(res).to.have.property(\"leave_request\");",
+							"    pm.expect(res).to.have.property(\"status\");",
+							"});",
+							"",
+							"pm.test(\"Message confirms successful fetch\", () => {",
+							"    pm.expect(res.message).to.be.a(\"string\");",
+							"    pm.expect(res.message).to.eql(\"Leave request fetched successfully.\");",
+							"});",
+							"",
+							"pm.test(\"Status field is 200\", () => {",
+							"    pm.expect(res.status).to.be.a(\"number\");",
+							"    pm.expect(res.status).to.eql(200);",
+							"});",
+							"",
+							"pm.test(\"Leave request field is an array\", () => {",
+							"    pm.expect(res.leave_request).to.be.an(\"array\");",
+							"});",
+							"",
+							"// ============================================================",
+							"// ✅ 3. HANDLE EMPTY VS POPULATED RESULTS",
+							"// ============================================================",
+							"",
+							"if (res.leave_request.length === 0) {",
+							"    // Empty array scenario",
+							"    pm.test(\"✓ Leave request array is empty (no records in date range)\", () => {",
+							"        pm.expect(res.leave_request.length).to.eql(0);",
+							"    });",
+							"    console.log(\"⚠️ No leave requests found for date range: \" + queryStartDate + \" to \" + queryEndDate);",
+							"    ",
+							"} else {",
+							"    // Populated array scenario - run comprehensive validations",
+							"    pm.test(\"✓ Leave request array contains records\", () => {",
+							"        pm.expect(res.leave_request.length).to.be.above(0);",
+							"    });",
+							"    ",
+							"    console.log(\"✓ Found \" + res.leave_request.length + \" leave request(s)\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/get-leave-request?start_date=2025-06-01&end_date=2025-10-03",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"get-leave-request"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2025-06-01"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-10-03"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leave approve",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Parse the response body",
+							"const jsonData = pm.response.json();",
+							"",
+							"// Parse the request body to get the remark",
+							"const requestBody = JSON.parse(pm.request.body.raw);",
+							"",
+							"",
+							"// Test 1: Validate response status code is 200",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"// Test 2: Validate the response structure has expected properties",
+							"pm.test(\"Response has expected properties\", function () {",
+							"    pm.expect(jsonData).to.have.property(\"message\");",
+							"    pm.expect(jsonData).to.have.property(\"leave_request\");",
+							"    pm.expect(jsonData).to.have.property(\"status\");",
+							"});",
+							"",
+							"// Test 3: Check that the leave status is \"APPROVED\" in the response (fixed to handle errors)",
+							"pm.test(\"Leave status is APPROVED\", function () {",
+							"    if (pm.response.code === 200 && jsonData.leave_request) {",
+							"        pm.expect(jsonData.leave_request.status).to.eql(\"APPROVED\");",
+							"    } else {",
+							"        pm.expect.fail(\"Cannot verify leave status - response does not contain leave_request data\");",
+							"    }",
+							"});",
+							"",
+							"// Test 4: Validate the approver_remark matches the request body remark",
+							"pm.test(\"Approver remark matches request body remark\", function () {",
+							"    pm.expect(jsonData.leave_request.approver_remark).to.eql(requestBody.remark);",
+							"});",
+							"",
+							"// Test 5: Verify important fields are not null",
+							"pm.test(\"Important fields are not null\", function () {",
+							"    pm.expect(jsonData.leave_request.id).to.not.be.null;",
+							"    pm.expect(jsonData.leave_request.user_id).to.not.be.null;",
+							"    pm.expect(jsonData.leave_request.leave_type).to.not.be.null;",
+							"    pm.expect(jsonData.leave_request.start_date).to.not.be.null;",
+							"    pm.expect(jsonData.leave_request.end_date).to.not.be.null;",
+							"    pm.expect(jsonData.leave_request.approver_id).to.not.be.null;",
+							"});",
+							"",
+							"// Test 6: Test that timestamps are in valid ISO format",
+							"pm.test(\"Timestamps are in valid ISO format\", function () {",
+							"    const isoDateRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z?$/;",
+							"    pm.expect(jsonData.leave_request.created_at).to.match(isoDateRegex);",
+							"    pm.expect(jsonData.leave_request.updated_at).to.match(isoDateRegex);",
+							"});",
+							"",
+							"// Test for 500 error response",
+							"pm.test(\"Handle 500 error - Permission denied\", function () {",
+							"    if (pm.response.code === 500) {",
+							"        pm.expect(jsonData).to.have.property(\"message\");",
+							"        pm.expect(jsonData).to.have.property(\"status\");",
+							"        pm.expect(jsonData.status).to.eql(500);",
+							"        // Optionally check for specific error message",
+							"        if (jsonData.message) {",
+							"            console.log(\"Error message: \" + jsonData.message);",
+							"        }",
+							"    } else {",
+							"        pm.test.skip(); // Skip this test if response is not 500",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"remark\": \"test\",\n    \"status\": \"APPROVED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/action-leave-request/{{leave_request_id}}",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"action-leave-request",
+						"{{leave_request_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leave reject",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let res = pm.response.json();",
+							"",
+							"// ---------------------------",
+							"// ✅ 1. Status & Response Validation",
+							"// ---------------------------",
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response message confirms success\", () => {",
+							"    pm.expect(res.message).to.eql(\"Leave request actioned successfully.\");",
+							"});",
+							"",
+							"pm.test(\"Response structure is valid\", () => {",
+							"    pm.expect(res).to.have.property(\"message\");",
+							"    pm.expect(res).to.have.property(\"leave_request\");",
+							"    pm.expect(res.leave_request).to.be.an(\"object\");",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 2. Validate Key Fields",
+							"// ---------------------------",
+							"let leave = res.leave_request;",
+							"",
+							"pm.test(\"Leave request contains all required fields\", () => {",
+							"    const requiredFields = [",
+							"        \"id\",",
+							"        \"user_id\",",
+							"        \"leave_type\",",
+							"        \"start_date\",",
+							"        \"end_date\",",
+							"        \"reason\",",
+							"        \"status\",",
+							"        \"approver_id\",",
+							"        \"approver_remark\",",
+							"        \"created_at\",",
+							"        \"updated_at\"",
+							"    ];",
+							"    requiredFields.forEach(field => pm.expect(leave).to.have.property(field));",
+							"});",
+							"",
+							"pm.test(\"Leave ID and User ID are valid numbers\", () => {",
+							"    pm.expect(leave.id).to.be.a(\"number\");",
+							"    pm.expect(leave.user_id).to.be.a(\"number\");",
+							"});",
+							"",
+							"pm.test(\"Approver remark matches submitted remark\", () => {",
+							"    pm.expect(leave.approver_remark).to.eql(\"test\");",
+							"});",
+							"",
+							"pm.test(\"Approver ID is correct\", () => {",
+							"    pm.expect(leave.approver_id).to.eql(pm.environment.get(\"approver_id\"));",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 3. Dynamic Status Validation",
+							"// ---------------------------",
+							"pm.test(\"Leave status is either APPROVED or DECLINED\", () => {",
+							"    pm.expect(leave.status).to.be.oneOf([\"APPROVED\", \"DECLINED\"]);",
+							"});",
+							"",
+							"// Optional dynamic logic — different expectations for each case",
+							"if (leave.status === \"APPROVED\") {",
+							"    pm.test(\"Approved leave should have approver remark recorded\", () => {",
+							"        pm.expect(leave.approver_remark).to.not.be.empty;",
+							"    });",
+							"} else if (leave.status === \"DECLINED\") {",
+							"    pm.test(\"Declined leave should not change core request details\", () => {",
+							"        pm.expect(leave.reason).to.include(\"Test\");",
+							"    });",
+							"}",
+							"",
+							"// ---------------------------",
+							"// ✅ 4. Data Type & Format Validation",
+							"// ---------------------------",
+							"pm.test(\"Date fields are in valid YYYY-MM-DD format\", () => {",
+							"    const datePattern = /^\\d{4}-\\d{2}-\\d{2}$/;",
+							"    pm.expect(leave.start_date).to.match(datePattern);",
+							"    pm.expect(leave.end_date).to.match(datePattern);",
+							"});",
+							"",
+							"pm.test(\"Timestamps follow ISO format\", () => {",
+							"    const isoPattern = /^\\d{4}-\\d{2}-\\d{2}T/;",
+							"    pm.expect(leave.created_at).to.match(isoPattern);",
+							"    pm.expect(leave.updated_at).to.match(isoPattern);",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 5. Business Logic Validation",
+							"// ---------------------------",
+							"pm.test(\"Leave type is valid\", () => {",
+							"    pm.expect(leave.leave_type).to.be.oneOf([\"Sick Leave\", \"Causal Leave\", \"Earned Leave\"]);",
+							"});",
+							"",
+							"pm.test(\"Latitude & Longitude fields exist and are numeric\", () => {",
+							"    pm.expect(leave.latitude).to.be.a(\"number\");",
+							"    pm.expect(leave.longitude).to.be.a(\"number\");",
+							"});",
+							"",
+							"pm.test(\"Leave policy ID is a positive number\", () => {",
+							"    pm.expect(leave.leave_policy_id).to.be.above(0);",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 6. Null & Optional Field Checks",
+							"// ---------------------------",
+							"pm.test(\"Optional fields (half_day_leave_id, approver_list) are nullable\", () => {",
+							"    pm.expect(leave).to.have.property(\"half_day_leave_id\");",
+							"    pm.expect(leave).to.have.property(\"approver_list\");",
+							"});",
+							"",
+							"pm.test(\"Non-null key fields are populated\", () => {",
+							"    [\"id\", \"status\", \"user_id\"].forEach(field => {",
+							"        pm.expect(leave[field]).to.not.be.null;",
+							"    });",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 7. Save Values for Chaining Tests",
+							"// ---------------------------",
+							"pm.test(\"Store leave_request_id and status for future tests\", () => {",
+							"    pm.environment.set(\"leave_request_id\", leave.id);",
+							"    pm.environment.set(\"leave_status\", leave.status);",
+							"    console.log(\"✅ Stored leave_request_id:\", leave.id);",
+							"    console.log(\"✅ Stored leave_status:\", leave.status);",
+							"});",
+							"",
+							"// ---------------------------",
+							"// ✅ 8. Negative & Security Checks",
+							"// ---------------------------",
+							"pm.test(\"Unauthorized users should not access this API\", () => {",
+							"    if (pm.response.code === 401 || pm.response.code === 403) {",
+							"        pm.expect(res.message).to.include(\"unauthorized\");",
+							"    }",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"remark\": \"test\",\n    \"status\": \"DECLINED\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Base_url}}/api/action-leave-request/832",
+					"host": [
+						"{{Base_url}}"
+					],
+					"path": [
+						"api",
+						"action-leave-request",
+						"832"
+					]
+				},
+				"description": "# Leave Request Action - Decline\n\n## Overview\nThis endpoint allows an authorized approver to action a leave request by either approving or declining it. This specific request demonstrates the decline workflow, where the approver rejects a pending leave request with a remark explaining the decision.\n\n## Endpoint Details\n- **Method:** `POST`\n- **URL:** `{{Base_url}}/api/action-leave-request/{leave_request_id}`\n- **Example:** `{{Base_url}}/api/action-leave-request/832`\n\n## Authentication\nThis endpoint requires authentication via Bearer token:\n- **Header:** `Authorization: Bearer {{access_token}}`\n\n## Headers\n| Key | Value | Required |\n|-----|-------|----------|\n| Authorization | Bearer {{access_token}} | Yes |\n| Content-Type | application/json | Yes |\n| Accept | application/json | Yes |\n\n## Path Parameters\n| Parameter | Type | Description |\n|-----------|------|-------------|\n| leave_request_id | integer | The unique identifier of the leave request to action (e.g., 832) |\n\n## Request Body\nThe request body must be in JSON format with the following parameters:\n\n| Parameter | Type | Required | Description |\n|-----------|------|----------|-------------|\n| remark | string | Yes | The approver's comment or reason for the decision. This will be stored as `approver_remark` in the response. |\n| status | string | Yes | The action to take on the leave request. Must be either `\"APPROVED\"` or `\"DECLINED\"`. |\n\n### Example Request Body\n```json\n{\n  \"remark\": \"test\",\n  \"status\": \"DECLINED\"\n}\n```\n\n## Response\n\n### Success Response (200 OK)\nThe endpoint returns a success message along with the updated leave request object.\n\n#### Response Structure\n```json\n{\n  \"message\": \"Leave request actioned successfully.\",\n  \"leave_request\": {\n    \"id\": number,\n    \"user_id\": number,\n    \"leave_type\": string,\n    \"start_date\": string,\n    \"end_date\": string,\n    \"reason\": string,\n    \"status\": string,\n    \"approver_id\": number,\n    \"approver_remark\": string,\n    \"created_at\": string,\n    \"updated_at\": string\n  }\n}\n```\n\n#### Key Response Fields\n| Field | Type | Description |\n|-------|------|-------------|\n| message | string | Confirmation message indicating the leave request was actioned successfully |\n| leave_request.id | number | Unique identifier of the leave request |\n| leave_request.user_id | number | ID of the user who submitted the leave request |\n| leave_request.leave_type | string | Type of leave requested (e.g., sick leave, annual leave) |\n| leave_request.start_date | string | Start date of the leave period |\n| leave_request.end_date | string | End date of the leave period |\n| leave_request.reason | string | The employee's reason for requesting leave |\n| leave_request.status | string | Current status - will be either \"APPROVED\" or \"DECLINED\" |\n| leave_request.approver_id | number | ID of the approver who actioned the request |\n| leave_request.approver_remark | string | The approver's comment (matches the `remark` sent in request body) |\n| leave_request.created_at | string | Timestamp when the leave request was created |\n| leave_request.updated_at | string | Timestamp when the leave request was last updated |\n\n## Test Scripts\nThis request includes comprehensive automated test scripts that validate:\n- ✅ HTTP 200 status code\n- ✅ Success message confirmation\n- ✅ Response structure validity\n- ✅ All required fields are present in the leave request object\n- ✅ Leave ID and User ID are valid numbers\n- ✅ Approver remark matches the submitted remark\n- ✅ Approver ID is correct (validated against environment variable)\n- ✅ Status is either \"APPROVED\" or \"DECLINED\"\n- ✅ Dynamic validation based on approval/decline status\n- ✅ Date format validation\n- ✅ Timestamp validation\n\n## Usage Notes\n- The approver must have appropriate permissions to action leave requests\n- The `leave_request_id` in the URL path must correspond to an existing, pending leave request\n- Once actioned, the leave request status is updated and cannot be changed again (depending on business logic)\n- The `approver_remark` is mandatory and provides transparency to the employee about the decision\n- The same endpoint can be used for both approving and declining by changing the `status` parameter"
+			},
+			"response": []
+		}
+	]
+}
