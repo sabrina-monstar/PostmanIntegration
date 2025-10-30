@@ -616,43 +616,38 @@
 					}
 				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Test for successful user creation (200 OK)",
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Response has correct structure for success\", function () {",
-							"    var jsonData = pm.response.json();",
-							"    pm.expect(jsonData).to.have.property('message');",
-							"    pm.expect(jsonData).to.have.property('status');",
-							"    pm.expect(jsonData.status).to.eql(200);",
-							"});",
-							"",
-							"// Handle response based on status code",
-							"if (pm.response.code === 200) {",
-							"    console.log(\"✅ User created successfully!\");",
-							"    ",
-							"    var jsonData = pm.response.json();",
-							"    var userData = jsonData.user;",
-							"    ",
-							"    // Save latest user data - simply overwrite each time",
-							"    pm.environment.set(\"new_user_id\", userData.id.toString());",
-							"    pm.environment.set(\"new_user_name\", userData.name);",
-							"    pm.environment.set(\"new_user_email\", userData.email);",
-							"    pm.environment.set(\"new_user_phone\", userData.phone);",
-							"    ",
-							}
-						
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
+  "listen": "test",
+  "script": {
+    "exec": [
+      "// Test for successful user creation (200 OK)",
+      "pm.test(\"Status code is 200\", function () {",
+      "    pm.response.to.have.status(200);",
+      "});",
+      "",
+      "pm.test(\"Response has correct structure for success\", function () {",
+      "    var jsonData = pm.response.json();",
+      "    pm.expect(jsonData).to.have.property('message');",
+      "    pm.expect(jsonData).to.have.property('status');",
+      "    pm.expect(jsonData.status).to.eql(200);",
+      "});",
+      "",
+      "// Handle response based on status code",
+      "if (pm.response.code === 200) {",
+      "    console.log(\"✅ User created successfully!\");",
+      "    var jsonData = pm.response.json();",
+      "    var userData = jsonData.user;",
+      "",
+      "    // Save latest user data - simply overwrite each time",
+      "    pm.environment.set(\"new_user_id\", userData.id.toString());",
+      "    pm.environment.set(\"new_user_name\", userData.name);",
+      "    pm.environment.set(\"new_user_email\", userData.email);",
+      "    pm.environment.set(\"new_user_phone\", userData.phone);",
+      "}"
+    ],
+    "type": "text/javascript"
+  }
+}
+
 			"request": {
 				"method": "POST",
 				"header": [
