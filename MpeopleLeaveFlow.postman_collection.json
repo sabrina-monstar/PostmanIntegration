@@ -1983,7 +1983,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"start_date\": \"2025-10-05\",\n  \"end_date\": \"2025-10-05\",\n  \"reason\": \"Test reason\",\n  \"leave_type\": \"Causal Leave\",\n  \"leave_policy_id\": 116,\n  \"half_day_leave_id\": \"\",\n  \"latitude\": 23.787225,\n  \"longitude\": 90.361073\n}",
+					"raw": "{\n  \"start_date\": \"2025-10-10\",\n  \"end_date\": \"2025-10-10\",\n  \"reason\": \"Test reason\",\n  \"leave_type\": \"Causal Leave\",\n  \"leave_policy_id\": 116,\n  \"half_day_leave_id\": \"\",\n  \"latitude\": 23.787225,\n  \"longitude\": 90.361073\n}",
 					"options": {
 						"raw": {
 							"language": "json"
